@@ -141,10 +141,29 @@ app.post('/api/reset', (req, res) => {
   res.json({ success: true, message: '已重置' });
 });
 
+// ===== 获取当前公网URL =====
+function getPublicUrl(req) {
+  // 优先使用环境变量
+  if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL;
+  // 从请求头检测公网域名
+  const host = req.get('host');
+  const forwardedHost = req.get('x-forwarded-host');
+  const useHost = forwardedHost || host;
+  if (useHost && !useHost.includes('localhost') && !useHost.includes('127.0.0.1') && !useHost.includes('192.168')) {
+    return `https://${useHost}`;
+  }
+  // 尝试从 x-forwarded-proto 和 host 构建
+  const proto = req.get('x-forwarded-proto') || 'http';
+  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+    return `${proto}://${host}`;
+  }
+  return BASE_URL;
+}
+
 // ===== API: 二维码 =====
 app.get('/api/qrcode', async (req, res) => {
   try {
-    const url = `${BASE_URL}/join.html`;
+    const url = `${getPublicUrl(req)}/join.html`;
     const qr = await QRCode.toDataURL(url, { width: 400, margin: 2, color: { dark: '#1a1a2e', light: '#ffffff' } });
     res.json({ success: true, qrcode: qr, url });
   } catch(e) {
@@ -155,7 +174,7 @@ app.get('/api/qrcode', async (req, res) => {
 // ===== API: 直接返回二维码图片 =====
 app.get('/api/qrcode.png', async (req, res) => {
   try {
-    const url = `${BASE_URL}/join.html`;
+    const url = `${getPublicUrl(req)}/join.html`;
     const buf = await QRCode.toBuffer(url, { width: 400, margin: 2, color: { dark: '#1a1a2e', light: '#ffffff' } });
     res.type('png').send(buf);
   } catch(e) {
