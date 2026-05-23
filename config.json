@@ -1,0 +1,9 @@
+{
+  "wechat": {
+    "appid": "",
+    "secret": ""
+  },
+  "server": {
+    "port": 3000
+  }
+}

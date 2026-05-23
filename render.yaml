@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: lottery-system
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0

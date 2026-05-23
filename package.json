@@ -1,0 +1,13 @@
+{
+  "name": "lottery-system",
+  "version": "1.0.0",
+  "description": "年会抽奖系统 - 扫码参与 + 大屏抽奖",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "qrcode": "^1.5.3"
+  }
+}
