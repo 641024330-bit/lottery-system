@@ -11,17 +11,23 @@ body {
   background: linear-gradient(135deg, #0f0f23, #1a1a3e);
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
   padding: 20px; color: #fff;
+  background-size: cover; background-position: center; background-attachment: fixed;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: rgba(0,0,0,var(--bg-overlay, 0.6)); pointer-events: none; z-index: 0;
 }
 .card {
+  position: relative; z-index: 1;
   background: rgba(22,33,62,.9); backdrop-filter: blur(20px);
   border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 400px;
-  border: 1px solid rgba(255,215,0,.15);
+  border: 1px solid color-mix(in srgb, var(--primary, #ffd700) 15%, transparent);
   box-shadow: 0 20px 60px rgba(0,0,0,.5);
   text-align: center;
 }
 .title {
-  font-size: 28px; font-weight: bold; color: #ffd700; margin-bottom: 6px;
-  text-shadow: 0 0 20px rgba(255,215,0,.2);
+  font-size: 28px; font-weight: bold; color: var(--primary, #ffd700); margin-bottom: 6px;
+  text-shadow: 0 0 20px color-mix(in srgb, var(--primary, #ffd700) 20%, transparent);
 }
 .subtitle { font-size: 14px; color: rgba(255,255,255,.4); margin-bottom: 32px; }
 
@@ -32,17 +38,31 @@ body {
   border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05);
   color: #fff; font-size: 16px; outline: none; transition: .2s;
 }
-.form-group input:focus { border-color: #ffd700; }
+.form-group input:focus { border-color: var(--primary, #ffd700); }
 .form-group input::placeholder { color: rgba(255,255,255,.2); }
 
 .btn-submit {
   width: 100%; padding: 16px; border: none; border-radius: 12px;
-  background: linear-gradient(135deg, #ffd700, #ffa500); color: #1a1a2e;
+  background: linear-gradient(135deg, var(--primary, #ffd700), color-mix(in srgb, var(--primary, #ffd700) 70%, #000)); color: #1a1a2e;
   font-size: 18px; font-weight: bold; cursor: pointer;
   transition: .2s; letter-spacing: 2px;
 }
-.btn-submit:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(255,215,0,.3); }
+.btn-submit:hover { transform: scale(1.02); box-shadow: 0 8px 30px color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); }
 .btn-submit:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+.btn-wechat {
+  width: 100%; padding: 16px; border: none; border-radius: 12px;
+  background: linear-gradient(135deg, #07c160, #06ad56); color: #fff;
+  font-size: 18px; font-weight: bold; cursor: pointer;
+  transition: .2s; letter-spacing: 2px; margin-bottom: 12px;
+}
+.btn-wechat:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(7,193,96,.3); }
+
+.divider {
+  display: flex; align-items: center; gap: 12px; margin: 16px 0;
+  color: rgba(255,255,255,.2); font-size: 12px;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.08); }
 
 .success {
   display: none; padding: 40px 0;
@@ -60,10 +80,15 @@ body {
 .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,.2); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 8px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+.wechat-loading { padding: 40px 0; }
+.wechat-loading .icon { font-size: 48px; margin-bottom: 16px; }
+.wechat-loading h2 { font-size: 20px; margin-bottom: 8px; }
+.wechat-loading p { font-size: 13px; color: rgba(255,255,255,.3); }
+
 .footer { margin-top: 20px; font-size: 12px; color: rgba(255,255,255,.15); }
 
 /* 装饰 */
-.deco { position: fixed; pointer-events: none; opacity: .03; font-size: 200px; }
+.deco { position: fixed; pointer-events: none; opacity: .03; font-size: 200px; z-index: 0; }
 .deco-1 { top: -50px; left: -50px; }
 .deco-2 { bottom: -80px; right: -50px; }
 </style>
@@ -73,12 +98,27 @@ body {
 <div class="deco deco-2">🏆</div>
 
 <div class="card">
-  <div class="title">🎯 年会抽奖</div>
-  <div class="subtitle">填写信息，参与现场抽奖</div>
+  <div class="title" id="titleText">🎯 年会抽奖</div>
+  <div class="subtitle" id="subtitleText">填写信息，参与现场抽奖</div>
+
+  <!-- 微信授权加载 -->
+  <div class="wechat-loading" id="wechatLoading" style="display:none;">
+    <div class="icon">⏳</div>
+    <h2>正在授权...</h2>
+    <p>正在获取您的微信信息，请稍候</p>
+  </div>
 
   <!-- 表单 -->
   <div id="formArea">
     <div class="error-msg" id="errorMsg"></div>
+
+    <!-- 微信一键授权按钮 -->
+    <div id="wechatAuthBtn" style="display:none;">
+      <button class="btn-wechat" onclick="wechatLogin()">
+        💬 微信一键授权参与
+      </button>
+      <div class="divider">或 手动填写</div>
+    </div>
 
     <div class="form-group">
       <label>您的姓名</label>
@@ -100,30 +140,126 @@ body {
     <div class="icon">🎉</div>
     <h2>参与成功！</h2>
     <p>请等待大屏抽奖，祝您好运！</p>
+    <div style="margin-top:16px;font-size:12px;color:rgba(255,255,255,.2);" id="successInfo"></div>
   </div>
 
-  <div class="footer">现场大屏抽奖系统</div>
+  <div class="footer" id="footerText">现场大屏抽奖系统</div>
 </div>
 
 <script>
 const API = '';
 let submitted = false;
+let settings = {};
 
-// 检测是否在微信中
+// ===== 检测微信浏览器 =====
 function isWeChat() { return /MicroMessenger/i.test(navigator.userAgent); }
 
-// 微信授权（如果有配置）
-async function wechatAuth() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('code')) return params.get('code');
-  if (isWeChat()) {
-    // 尝试从meta获取appid
-    // 实际oauth需要后端配合，先走简单模式
-  }
-  return null;
+// ===== 获取URL参数 =====
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || '';
 }
 
-// 参与抽奖
+// ===== 加载设置 =====
+async function loadSettings() {
+  try {
+    const r = await fetch(`${API}/api/settings`).then(r => r.json());
+    if (r.success) {
+      settings = r.data;
+      applyTheme(r.data);
+    }
+  } catch(e) {}
+}
+
+function applyTheme(s) {
+  const root = document.documentElement;
+  const primary = s.primaryColor || '#ffd700';
+  const bgColor = s.bgColor || '#0f0f23';
+  const overlay = s.bgOverlay ?? 0.6;
+
+  root.style.setProperty('--primary', primary);
+  root.style.setProperty('--bg-overlay', overlay);
+
+  if (s.bgType === 'image' && s.bgImage) {
+    document.body.style.backgroundImage = `url(${s.bgImage})`;
+    document.body.style.backgroundColor = 'transparent';
+  } else {
+    document.body.style.background = bgColor;
+  }
+
+  if (s.title) document.getElementById('titleText').textContent = '🎯 ' + s.title;
+  if (s.subtitle) document.getElementById('subtitleText').textContent = s.subtitle;
+  if (s.title) document.title = s.title + ' - 参与抽奖';
+  document.getElementById('footerText').textContent = s.subtitle || '现场大屏抽奖系统';
+
+  // Show/hide WeChat button based on join method
+  const joinMethod = s.joinMethod || 'form';
+  const wechatBtn = document.getElementById('wechatAuthBtn');
+  if (joinMethod === 'wechat' || joinMethod === 'both') {
+    wechatBtn.style.display = 'block';
+    if (joinMethod === 'wechat') {
+      // 仅微信模式：隐藏表单字段，直接显示微信按钮
+      document.querySelectorAll('.form-group').forEach(el => el.style.display = 'none');
+      document.getElementById('btnSubmit').style.display = 'none';
+      document.querySelector('.divider').style.display = 'none';
+    }
+  } else {
+    wechatBtn.style.display = 'none';
+  }
+}
+
+// ===== 微信授权 =====
+function wechatLogin() {
+  const appId = settings.wechatAppId;
+  if (!appId) {
+    showError('微信未配置，请使用表单参与');
+    return;
+  }
+  // 构建OAuth URL
+  const redirectUri = encodeURIComponent(window.location.origin + '/api/wechat/callback');
+  const state = 'join';
+  const oauthUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_userinfo&state=${state}#wechat_redirect`;
+  window.location.href = oauthUrl;
+}
+
+// ===== 初始化 =====
+async function init() {
+  await loadSettings();
+
+  const auth = getParam('auth');
+  const wechatParam = getParam('wechat');
+
+  if (auth === 'success') {
+    // 微信授权成功回调
+    submitted = true;
+    document.getElementById('formArea').style.display = 'none';
+    document.getElementById('successArea').style.display = 'block';
+    document.getElementById('successInfo').textContent = '已通过微信授权自动参与';
+    return;
+  }
+
+  if (auth === 'done') {
+    // 已经参与过
+    submitted = true;
+    document.getElementById('formArea').style.display = 'none';
+    document.getElementById('successArea').style.display = 'block';
+    document.getElementById('successInfo').textContent = '您已经参与过抽奖，请等待开奖';
+    return;
+  }
+
+  if (auth === 'fail') {
+    showError('微信授权失败，请手动填写信息参与');
+  }
+
+  // 微信内自动触发授权
+  if (isWeChat() && wechatParam === '1' && settings.wechatAppId && !auth) {
+    // 自动跳转微信授权
+    document.getElementById('wechatLoading').style.display = 'block';
+    document.getElementById('formArea').style.display = 'none';
+    setTimeout(wechatLogin, 1000);
+  }
+}
+
+// ===== 参与抽奖 =====
 async function submitJoin() {
   if (submitted) return;
   const nickname = document.getElementById('nickname').value.trim();
@@ -138,15 +274,11 @@ async function submitJoin() {
   btn.innerHTML = '<span class="loading"></span> 提交中...';
   hideError();
 
-  // 获取微信code（如果在微信中）
-  let openid = '';
-  const params = new URLSearchParams(window.location.search);
-
   try {
     const r = await fetch(`${API}/api/join`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nickname, phone, avatar: '', openid }),
+      body: JSON.stringify({ nickname, phone, avatar: '', openid: '' }),
     });
     const res = await r.json();
 
@@ -178,6 +310,8 @@ function hideError() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') submitJoin();
 });
+
+init();
 </script>
 </body>
 </html>

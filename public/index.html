@@ -3,20 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>年会抽奖 - 大屏端</title>
+<title id="pageTitle">年会抽奖 - 大屏端</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Microsoft YaHei', sans-serif;
-  background: #0f0f23; color: #fff; overflow: hidden;
+  background: var(--bg-color, #0f0f23); color: #fff; overflow: hidden;
   height: 100vh; display: flex; flex-direction: column;
+  background-size: cover; background-position: center; background-attachment: fixed;
 }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: rgba(0,0,0,var(--bg-overlay, 0.6)); pointer-events: none; z-index: 0;
+}
+.header, .main, .settings-btn { position: relative; z-index: 1; }
+
 .header {
-  background: linear-gradient(135deg, #1a1a3e, #0f0f23);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--bg-color, #0f0f23) 80%, transparent), transparent);
   padding: 14px 28px; display: flex; align-items: center;
-  border-bottom: 1px solid rgba(255,215,0,.2); flex-shrink: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--primary, #ffd700) 20%, transparent);
+  flex-shrink: 0;
 }
-.header h1 { font-size: 24px; color: #ffd700; letter-spacing: 4px; margin-right: auto; }
+.header h1 { font-size: 24px; color: var(--primary, #ffd700); letter-spacing: 4px; margin-right: auto; }
 .header .info { display: flex; gap: 20px; font-size: 13px; color: rgba(255,255,255,.5); }
 
 .main { flex: 1; display: flex; overflow: hidden; }
@@ -30,8 +38,8 @@ body {
   background: rgba(255,255,255,.05); color: #fff; cursor: pointer;
   font-size: 14px; transition: .2s; text-align: center;
 }
-.prize-tab:hover { border-color: rgba(255,215,0,.3); }
-.prize-tab.active { background: #ffd700; color: #1a1a2e; border-color: #ffd700; font-weight: bold; }
+.prize-tab:hover { border-color: color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); }
+.prize-tab.active { background: var(--primary, #ffd700); color: #1a1a2e; border-color: var(--primary, #ffd700); font-weight: bold; }
 .prize-tab .c { font-size: 11px; opacity: .5; display: block; margin-top: 2px; }
 
 /* 抽奖区 */
@@ -41,18 +49,18 @@ body {
 }
 .draw-area::before {
   content: ''; position: absolute; width: 150%; height: 150%;
-  background: conic-gradient(from 0deg, transparent, rgba(255,215,0,.02), transparent, rgba(255,215,0,.02), transparent);
+  background: conic-gradient(from 0deg, transparent, color-mix(in srgb, var(--primary, #ffd700) 2%, transparent), transparent, color-mix(in srgb, var(--primary, #ffd700) 2%, transparent), transparent);
   animation: rotate 30s linear infinite; pointer-events: none;
 }
 @keyframes rotate { to { transform: rotate(360deg); } }
 
 .prize-label { font-size: 20px; color: rgba(255,255,255,.4); z-index: 1; }
-.prize-name { font-size: 42px; color: #ffd700; font-weight: bold; margin-bottom: 16px; z-index: 1; text-shadow: 0 0 30px rgba(255,215,0,.3); }
+.prize-name { font-size: 42px; color: var(--primary, #ffd700); font-weight: bold; margin-bottom: 16px; z-index: 1; text-shadow: 0 0 30px color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); }
 
 .roll-box {
   width: 60%; max-width: 600px; height: 140px;
-  border: 2px solid rgba(255,215,0,.3); border-radius: 14px;
-  overflow: hidden; position: relative; z-index: 1;
+  border: 2px solid color-mix(in srgb, var(--primary, #ffd700) 30%, transparent);
+  border-radius: 14px; overflow: hidden; position: relative; z-index: 1;
   background: rgba(0,0,0,.5); backdrop-filter: blur(10px);
 }
 .roll-track { position: absolute; left: 0; right: 0; transition: none; }
@@ -60,10 +68,10 @@ body {
   height: 140px; display: flex; align-items: center; justify-content: center;
   font-size: 56px; font-weight: bold; color: #fff;
 }
-.roll-item.winner { color: #ffd700; animation: wf .5s ease-in-out 3; }
+.roll-item.winner { color: var(--primary, #ffd700); animation: wf .5s ease-in-out 3; }
 @keyframes wf {
   0%,100% { transform: scale(1); }
-  50% { transform: scale(1.15); text-shadow: 0 0 60px rgba(255,215,0,.8); }
+  50% { transform: scale(1.15); text-shadow: 0 0 60px color-mix(in srgb, var(--primary, #ffd700) 80%, transparent); }
 }
 
 .actions { z-index: 1; margin-top: 24px; display: flex; gap: 16px; }
@@ -71,8 +79,8 @@ body {
   padding: 14px 50px; font-size: 20px; border: none; border-radius: 12px;
   cursor: pointer; font-weight: bold; letter-spacing: 3px; transition: .2s;
 }
-.btn-draw { background: linear-gradient(135deg, #ff4757, #ff6b81); color: #fff; }
-.btn-draw:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 8px 30px rgba(255,71,87,.4); }
+.btn-draw { background: linear-gradient(135deg, var(--primary, #ffd700), color-mix(in srgb, var(--primary, #ffd700) 70%, #000)); color: #1a1a2e; }
+.btn-draw:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 8px 30px color-mix(in srgb, var(--primary, #ffd700) 40%, transparent); }
 .btn-draw:disabled { opacity: .3; cursor: not-allowed; }
 .btn-reset { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.1); }
 .btn-reset:hover { background: rgba(255,255,255,.12); }
@@ -89,7 +97,7 @@ body {
 }
 .qr-hint { font-size: 13px; color: #333; font-weight: bold; margin: 4px 0; }
 
-.section-title { font-size: 13px; color: #ffd700; margin-bottom: 8px; display: flex; justify-content: space-between; }
+.section-title { font-size: 13px; color: var(--primary, #ffd700); margin-bottom: 8px; display: flex; justify-content: space-between; }
 .participant-list { flex: 1; overflow-y: auto; min-height: 0; }
 .participant-list::-webkit-scrollbar { width: 3px; }
 .participant-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
@@ -99,7 +107,7 @@ body {
   background: rgba(255,255,255,.03); margin-bottom: 3px;
 }
 .p-item .phone { color: rgba(255,255,255,.3); font-size: 11px; margin-left: auto; }
-.p-item.won { background: rgba(255,215,0,.1); border: 1px solid rgba(255,215,0,.2); }
+.p-item.won { background: color-mix(in srgb, var(--primary, #ffd700) 10%, transparent); border: 1px solid color-mix(in srgb, var(--primary, #ffd700) 20%, transparent); }
 
 /* 中奖弹窗 */
 .overlay {
@@ -109,23 +117,23 @@ body {
 .overlay.show { display: flex; }
 .winner-modal {
   background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
-  border: 2px solid #ffd700; border-radius: 24px; padding: 50px 70px;
+  border: 2px solid var(--primary, #ffd700); border-radius: 24px; padding: 50px 70px;
   text-align: center; animation: mi .4s ease-out;
-  box-shadow: 0 0 80px rgba(255,215,0,.2);
+  box-shadow: 0 0 80px color-mix(in srgb, var(--primary, #ffd700) 20%, transparent);
 }
 @keyframes mi { from { transform: scale(.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.winner-modal h2 { font-size: 28px; color: #ffd700; margin-bottom: 8px; }
+.winner-modal h2 { font-size: 28px; color: var(--primary, #ffd700); margin-bottom: 8px; }
 .winner-modal .name { font-size: 72px; color: #fff; font-weight: bold; margin: 16px 0; }
 .winner-modal .ptag { font-size: 16px; color: rgba(255,255,255,.5); }
 .winner-modal .btn-close {
   margin-top: 24px; padding: 10px 36px; border-radius: 8px;
-  background: #ffd700; color: #1a1a2e; border: none; font-size: 16px; cursor: pointer; font-weight: bold;
+  background: var(--primary, #ffd700); color: #1a1a2e; border: none; font-size: 16px; cursor: pointer; font-weight: bold;
 }
 
 /* 中奖名单 */
 .winner-section { margin-top: auto; border-top: 1px solid rgba(255,255,255,.05); padding-top: 8px; }
 .wtags { display: flex; flex-wrap: wrap; gap: 4px; max-height: 80px; overflow-y: auto; }
-.wtag { font-size: 11px; padding: 2px 8px; background: rgba(255,215,0,.1); border-radius: 10px; color: #ffd700; }
+.wtag { font-size: 11px; padding: 2px 8px; background: color-mix(in srgb, var(--primary, #ffd700) 10%, transparent); border-radius: 10px; color: var(--primary, #ffd700); }
 
 /* 设置按钮 */
 .settings-btn {
@@ -143,23 +151,30 @@ body {
   background: #16213e; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px;
   max-height: 80vh; overflow-y: auto;
 }
-.settings-content h2 { color: #ffd700; font-size: 20px; margin-bottom: 16px; }
+.settings-content h2 { color: var(--primary, #ffd700); font-size: 20px; margin-bottom: 16px; }
 .settings-content .form-group { margin-bottom: 14px; }
 .settings-content label { display: block; font-size: 13px; color: rgba(255,255,255,.5); margin-bottom: 4px; }
 .settings-content input, .settings-content select {
   width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,.1);
   background: rgba(255,255,255,.05); color: #fff; font-size: 14px; outline: none;
 }
-.settings-content input:focus { border-color: #ffd700; }
+.settings-content input:focus { border-color: var(--primary, #ffd700); }
 .settings-content .btn-save {
-  padding: 10px 30px; background: #ffd700; color: #1a1a2e; border: none;
+  padding: 10px 30px; background: var(--primary, #ffd700); color: #1a1a2e; border: none;
   border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
 }
 .prize-item { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
 .prize-item input { flex: 1; }
 .prize-item input[type=number] { width: 70px; flex: none; }
 .prize-item .del { padding: 4px 10px; background: rgba(255,71,87,.2); color: #ff4757; border: none; border-radius: 4px; cursor: pointer; }
-.add-prize { padding: 6px 16px; background: rgba(255,215,0,.1); color: #ffd700; border: 1px dashed rgba(255,215,0,.3); border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 4px; }
+.add-prize { padding: 6px 16px; background: color-mix(in srgb, var(--primary, #ffd700) 10%, transparent); color: var(--primary, #ffd700); border: 1px dashed color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 4px; }
+
+.anim-modern .roll-box { border-radius: 4px; border-width: 1px; }
+.anim-modern .roll-item { font-weight: 500; letter-spacing: 2px; }
+.anim-modern .btn-draw { border-radius: 4px; letter-spacing: 1px; }
+.anim-minimal .roll-box { border: none; background: rgba(255,255,255,.03); backdrop-filter: none; border-radius: 0; }
+.anim-minimal .roll-item { font-weight: 300; color: rgba(255,255,255,.8); }
+.anim-minimal .btn-draw { background: transparent; border: 1px solid var(--primary, #ffd700); border-radius: 2px; letter-spacing: 2px; color: var(--primary, #ffd700); }
 
 @media (max-width: 768px) {
   .right { width: 240px; }
@@ -174,7 +189,7 @@ body {
 <body>
 
 <div class="header">
-  <h1>🎯 年会抽奖</h1>
+  <h1 id="titleText">🎯 年会抽奖</h1>
   <div class="info">
     <span id="participantTotal">参与者: 0 人</span>
     <span id="winnerTotal">已中奖: 0 人</span>
@@ -210,7 +225,7 @@ body {
       <span>📋 参与者 <span id="listCount">(0)</span></span>
     </div>
     <div class="participant-list" id="participantList">
-      <div style="text-align:center;color:rgba(255,255,255,.15);margin-top:40px;font-size:13px;">暂无参与者<br>等待客户扫码加入...</div>
+      <div style="text-align:center;color:rgba(255,255,255,.15);margin-top:40px;font-size:13px;">暂无参与者<br>等待扫码加入...</div>
     </div>
 
     <div class="winner-section">
@@ -250,10 +265,61 @@ body {
 const API = '';
 let state = { prizes: [], currentIdx: 0, isRolling: false, timer: null, pollTimer: null };
 let tempPrizes = [];
+let settings = {};
+
+// ===== 加载设置 =====
+async function loadSettings() {
+  try {
+    const r = await fetch(`${API}/api/settings`).then(r => r.json());
+    if (r.success) {
+      settings = r.data;
+      applySettings(r.data);
+    }
+  } catch(e) {}
+}
+
+function applySettings(s) {
+  const root = document.documentElement;
+  const primary = s.primaryColor || '#ffd700';
+  const bgColor = s.bgColor || '#0f0f23';
+  const overlay = s.bgOverlay ?? 0.6;
+
+  root.style.setProperty('--primary', primary);
+  root.style.setProperty('--bg-color', bgColor);
+  root.style.setProperty('--bg-overlay', overlay);
+
+  // Background image
+  if (s.bgType === 'image' && s.bgImage) {
+    document.body.style.backgroundImage = `url(${s.bgImage})`;
+  } else {
+    document.body.style.backgroundImage = 'none';
+    document.body.style.backgroundColor = bgColor;
+  }
+
+  // Title
+  if (s.title) {
+    document.getElementById('titleText').textContent = '🎯 ' + s.title;
+    document.getElementById('pageTitle').textContent = s.title + ' - 大屏端';
+  }
+
+  // Animation style
+  document.body.classList.remove('anim-classic', 'anim-modern', 'anim-minimal');
+  if (s.animationStyle && s.animationStyle !== 'classic') {
+    document.body.classList.add('anim-' + s.animationStyle);
+  }
+
+  // QR hint text
+  if (s.joinMethod === 'wechat') {
+    document.querySelector('.qr-hint').textContent = '📱 微信扫码授权参与抽奖';
+  } else {
+    document.querySelector('.qr-hint').textContent = '📱 微信扫码参与抽奖';
+  }
+}
 
 // ===== 初始化 =====
 async function init() {
-  // 获取扫码URL
+  await loadSettings();
+
   fetch(`${API}/api/qrcode`).then(r=>r.json()).then(r=>{
     if(r.success) document.getElementById('qrUrl').textContent = r.url;
   });
@@ -322,13 +388,13 @@ async function pollData() {
 
     const el = document.getElementById('participantList');
     if (!pr.data.length) {
-      el.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.15);margin-top:40px;font-size:13px;">暂无参与者<br>等待客户扫码加入...</div>';
+      el.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.15);margin-top:40px;font-size:13px;">暂无参与者<br>等待扫码加入...</div>';
     } else {
       el.innerHTML = pr.data.map(p => `
         <div class="p-item ${allWonIds.has(p.id) ? 'won' : ''}">
           <span>${p.nickname}</span>
           <span class="phone">${p.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}</span>
-          ${allWonIds.has(p.id) ? '<span style="font-size:11px;color:#ffd700;">🎉</span>' : ''}
+          ${allWonIds.has(p.id) ? '<span style="font-size:11px;color:var(--primary);">🏆</span>' : ''}
         </div>
       `).join('');
     }
