@@ -41,6 +41,7 @@ h1 { font-size: 22px; margin-bottom: 24px; color: #ffd700; }
 }
 .form-group input:focus, .form-group select:focus { border-color: #ffd700; }
 .form-group input[type=color] { height: 42px; padding: 3px; cursor: pointer; }
+.form-group input[type=range] { padding: 0; background: transparent; border: none; }
 
 .btn {
   padding: 10px 28px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold;
@@ -53,6 +54,7 @@ h1 { font-size: 22px; margin-bottom: 24px; color: #ffd700; }
 .btn-sm { padding: 6px 16px; font-size: 12px; }
 .btn-outline { background: transparent; color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.1); }
 .btn-outline:hover { color: #fff; border-color: rgba(255,255,255,.2); }
+.btn-success { background: #2ed573; color: #fff; }
 
 .toast {
   position: fixed; top: 20px; right: 20px; padding: 14px 24px; border-radius: 10px;
@@ -116,6 +118,34 @@ tr:hover td { background: rgba(255,255,255,.02); }
 
 .secret-input { font-family: monospace; letter-spacing: 2px; }
 
+.audio-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.audio-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  background: rgba(255,255,255,.03); border-radius: 8px; border: 1px solid rgba(255,255,255,.06);
+}
+.audio-item .name { flex: 1; font-size: 13px; }
+.audio-item.active { border-color: #ffd700; background: rgba(255,215,0,.05); }
+
+.qr-preview {
+  max-width: 200px; border-radius: 12px; border: 2px solid rgba(255,255,255,.1);
+  margin: 12px 0; display: block;
+}
+
+.switch {
+  position: relative; display: inline-block; width: 44px; height: 24px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider {
+  position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,.15);
+  transition: .2s; border-radius: 24px;
+}
+.switch .slider::before {
+  content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background: #fff; transition: .2s; border-radius: 50%;
+}
+.switch input:checked + .slider { background: #2ed573; }
+.switch input:checked + .slider::before { transform: translateX(20px); }
+
 @media (max-width: 768px) {
   .sidebar { width: 60px; }
   .sidebar .brand { font-size: 0; padding: 16px 0; text-align: center; }
@@ -133,7 +163,10 @@ tr:hover td { background: rgba(255,255,255,.02); }
 <div class="sidebar">
   <div class="brand">⚙ 管理</div>
   <a class="active" onclick="switchPage('basic')">基本设置</a>
+  <a onclick="switchPage('animation')">抽奖动效</a>
   <a onclick="switchPage('background')">背景设置</a>
+  <a onclick="switchPage('audio')">音效设置</a>
+  <a onclick="switchPage('qrcode')">二维码</a>
   <a onclick="switchPage('prizes')">奖项管理</a>
   <a onclick="switchPage('wechat')">微信配置</a>
   <a onclick="switchPage('data')">数据管理</a>
@@ -162,14 +195,6 @@ tr:hover td { background: rgba(255,255,255,.02); }
           <input id="s-primaryColor" type="color" value="#ffd700">
         </div>
         <div class="form-group">
-          <label>动画风格</label>
-          <select id="s-animationStyle">
-            <option value="classic">经典</option>
-            <option value="modern">现代</option>
-            <option value="minimal">简约</option>
-          </select>
-        </div>
-        <div class="form-group">
           <label>参与方式</label>
           <select id="s-joinMethod">
             <option value="form">仅表单</option>
@@ -179,6 +204,50 @@ tr:hover td { background: rgba(255,255,255,.02); }
         </div>
       </div>
       <button class="btn btn-primary" onclick="saveBasic()">保存设置</button>
+    </div>
+  </div>
+
+  <!-- ===== 抽奖动效 ===== -->
+  <div class="page" id="page-animation">
+    <h1>抽奖动效设置</h1>
+    <div class="card">
+      <h3>抽奖动画效果</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>动画风格</label>
+          <select id="s-animationStyle">
+            <option value="roll">🎡 滚动抽奖</option>
+            <option value="card">🃏 翻牌抽奖</option>
+            <option value="slot">🎰 老虎机</option>
+            <option value="highlight">✨ 聚光灯</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border-radius:8px;padding:16px;margin-bottom:16px;">
+        <p style="font-size:13px;color:rgba(255,255,255,.4);line-height:1.8;">
+          🎡 <b style="color:#fff;">滚动抽奖</b> — 名字列表上下滚动，经典抽奖效果<br>
+          🃏 <b style="color:#fff;">翻牌抽奖</b> — 多张卡片翻转，逐个揭晓中奖者<br>
+          🎰 <b style="color:#fff;">老虎机</b> — 三列名字独立滚动，如老虎机般停止<br>
+          ✨ <b style="color:#fff;">聚光灯</b> — 所有名字浮动闪烁，最终聚焦中奖者
+        </p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>抽奖模式</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>抽奖模式</label>
+          <select id="s-drawMode">
+            <option value="single">单次抽1人</option>
+            <option value="batch">单次抽多人</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>每次抽奖人数</label>
+          <input id="s-batchCount" type="number" min="1" max="50" value="3">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveAnimation()">保存动效设置</button>
     </div>
   </div>
 
@@ -192,7 +261,6 @@ tr:hover td { background: rgba(255,255,255,.02); }
         <div class="overlay-sample" id="bgOverlaySample"></div>
       </div>
     </div>
-
     <div class="card">
       <h3>背景类型</h3>
       <div class="form-row">
@@ -215,7 +283,6 @@ tr:hover td { background: rgba(255,255,255,.02); }
         </div>
       </div>
     </div>
-
     <div class="card" id="bgPresetCard">
       <h3>预设背景</h3>
       <div class="bg-presets" id="bgPresets">
@@ -227,18 +294,80 @@ tr:hover td { background: rgba(255,255,255,.02); }
         <div class="bg-preset" style="background:linear-gradient(135deg,#0f0f23,#1a3a3e);" data-color="#0f0f23" onclick="pickPreset(this)"></div>
       </div>
     </div>
-
     <div class="card" id="bgImageCard">
       <h3>上传背景图片</h3>
-      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('bgFileInput').click()">
+      <div class="upload-zone" onclick="document.getElementById('bgFileInput').click()">
         <div class="icon">🖼</div>
-        <p>点击上传背景图片（支持 JPG / PNG）</p>
+        <p>点击上传活动照片/背景图（支持 JPG / PNG）</p>
         <input type="file" id="bgFileInput" accept="image/*" style="display:none" onchange="uploadBg()">
       </div>
       <div class="bg-list" id="bgList"></div>
+      <p style="font-size:12px;color:rgba(255,255,255,.2);margin-top:4px;">💡 上传后选择图片，然后点击"保存背景设置"生效</p>
     </div>
-
     <button class="btn btn-primary" onclick="saveBackground()">保存背景设置</button>
+  </div>
+
+  <!-- ===== 音效设置 ===== -->
+  <div class="page" id="page-audio">
+    <h1>音效设置</h1>
+    <div class="card">
+      <h3>背景音乐 (BGM)</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>启用BGM</label>
+          <label class="switch">
+            <input id="s-bgmEnabled" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="upload-zone" onclick="document.getElementById('audioFileInput').click()">
+        <div class="icon">🎵</div>
+        <p>点击上传背景音乐（支持 MP3 / WAV / OGG）</p>
+        <input type="file" id="audioFileInput" accept="audio/*" style="display:none" onchange="uploadAudio()">
+      </div>
+      <div id="audioList" class="audio-list">
+        <span style="color:rgba(255,255,255,.15);font-size:12px;">暂无上传音乐</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>当前BGM预览</h3>
+      <div id="bgmPreview">
+        <span style="color:rgba(255,255,255,.2);font-size:13px;">未选择BGM</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="saveAudio()">保存音效设置</button>
+  </div>
+
+  <!-- ===== 二维码设置 ===== -->
+  <div class="page" id="page-qrcode">
+    <h1>二维码设置</h1>
+    <div class="card">
+      <h3>当前大屏二维码</h3>
+      <div id="qrPreviewArea">
+        <p style="color:rgba(255,255,255,.2);font-size:13px;">加载中...</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>上传自定义二维码</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:12px;">你可以上传微信小程序的二维码，替换掉系统默认的参与页二维码</p>
+      <div class="upload-zone" onclick="document.getElementById('qrFileInput').click()">
+        <div class="icon">📱</div>
+        <p>点击上传小程序码/自定义二维码图片</p>
+        <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="uploadQr()">
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="clearQr()" style="margin-top:8px;">恢复默认二维码</button>
+    </div>
+    <div class="card">
+      <h3>配置说明</h3>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:2;">
+        <p>1. 上传你微信小程序的二维码图片</p>
+        <p>2. 大屏端会自动显示你上传的二维码</p>
+        <p>3. 用户扫码后打开你的小程序，你需要在</p>
+        <p>   小程序内引导用户访问 <code style="color:#ffd700;">/join.html</code> 参与抽奖</p>
+        <p>4. 如果不需要自定义二维码，点击"恢复默认"即可</p>
+      </div>
+    </div>
   </div>
 
   <!-- ===== 奖项管理 ===== -->
@@ -328,7 +457,6 @@ tr:hover td { background: rgba(255,255,255,.02); }
 <script>
 const API = '';
 let settings = {};
-let bgList = [];
 let tempPrizes = [];
 
 // ===== 页面切换 =====
@@ -338,9 +466,11 @@ function switchPage(name) {
   document.getElementById('page-' + name).classList.add('active');
   document.querySelector(`.sidebar a[onclick*="'${name}'"]`).classList.add('active');
   if (name === 'background') loadBgList();
-  if (name === 'prizes') loadPrizes();
+  if (name === 'prizes') { loadPrizes(); loadWinners(); }
   if (name === 'participants') loadParticipants();
   if (name === 'data') loadStatus();
+  if (name === 'audio') loadAudioList();
+  if (name === 'qrcode') loadQrPreview();
 }
 
 // ===== Toast =====
@@ -355,17 +485,32 @@ async function loadSettings() {
   const r = await fetch(`${API}/api/settings`).then(r => r.json());
   if (!r.success) return;
   settings = r.data;
+
+  // Basic
   document.getElementById('s-title').value = settings.title || '';
   document.getElementById('s-subtitle').value = settings.subtitle || '';
   document.getElementById('s-primaryColor').value = settings.primaryColor || '#ffd700';
+  document.getElementById('s-joinMethod').value = settings.joinMethod || 'form';
+
+  // Animation
+  document.getElementById('s-animationStyle').value = settings.animationStyle || 'roll';
+  document.getElementById('s-drawMode').value = settings.drawMode || 'single';
+  document.getElementById('s-batchCount').value = settings.batchCount || 3;
+
+  // Background
   document.getElementById('s-bgType').value = settings.bgType || 'color';
   document.getElementById('s-bgColor').value = settings.bgColor || '#0f0f23';
   document.getElementById('s-bgOverlay').value = settings.bgOverlay ?? 0.6;
   document.getElementById('overlayVal').textContent = settings.bgOverlay ?? 0.6;
-  document.getElementById('s-animationStyle').value = settings.animationStyle || 'classic';
-  document.getElementById('s-joinMethod').value = settings.joinMethod || 'form';
+
+  // Audio
+  document.getElementById('s-bgmEnabled').checked = settings.bgmEnabled !== false;
+  document.getElementById('s-bgmEnabled').disabled = false;
+
+  // WeChat
   document.getElementById('s-wechatAppId').value = settings.wechatAppId || '';
   document.getElementById('s-wechatAppSecret').value = settings.wechatAppSecret || '';
+
   updateBgPreview();
   onBgTypeChange();
 }
@@ -376,7 +521,6 @@ async function saveBasic() {
     title: document.getElementById('s-title').value,
     subtitle: document.getElementById('s-subtitle').value,
     primaryColor: document.getElementById('s-primaryColor').value,
-    animationStyle: document.getElementById('s-animationStyle').value,
     joinMethod: document.getElementById('s-joinMethod').value,
   };
   const r = await fetch(`${API}/api/settings`, {
@@ -384,6 +528,21 @@ async function saveBasic() {
     body: JSON.stringify(body),
   }).then(r => r.json());
   if (r.success) { showToast('基本设置已保存', 'success'); settings = { ...settings, ...body }; }
+  else showToast('保存失败', 'error');
+}
+
+// ===== 保存动效设置 =====
+async function saveAnimation() {
+  const body = {
+    animationStyle: document.getElementById('s-animationStyle').value,
+    drawMode: document.getElementById('s-drawMode').value,
+    batchCount: parseInt(document.getElementById('s-batchCount').value) || 3,
+  };
+  const r = await fetch(`${API}/api/settings`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  }).then(r => r.json());
+  if (r.success) { showToast('动效设置已保存', 'success'); settings = { ...settings, ...body }; }
   else showToast('保存失败', 'error');
 }
 
@@ -402,12 +561,13 @@ function updateBgPreview() {
   const color = document.getElementById('s-bgColor').value;
   const ov = document.getElementById('s-bgOverlay').value;
 
+  box.style.backgroundImage = '';
+  box.style.backgroundColor = 'transparent';
   if (t === 'image' && settings.bgImage) {
     box.style.backgroundImage = `url(${settings.bgImage})`;
     box.style.backgroundSize = 'cover';
     box.classList.add('has-bg');
   } else if (t === 'color') {
-    box.style.backgroundImage = 'none';
     box.style.backgroundColor = color;
     box.classList.add('has-bg');
   } else {
@@ -443,33 +603,47 @@ async function uploadBg() {
     updateBgPreview();
     loadBgList();
   } else showToast('上传失败: ' + r.message, 'error');
+  document.getElementById('bgFileInput').value = '';
 }
 
 async function loadBgList() {
-  // background list via fetching /backgrounds/ directory listing isn't available,
-  // so we try common patterns. For now just show what's configured.
-  const list = document.getElementById('bgList');
-  if (settings.bgImage) {
-    list.innerHTML = `<div class="bg-item active" style="background-image:url(${settings.bgImage})" onclick="selectBg(this)">
-      <button class="del-bg" onclick="event.stopPropagation();deleteBg()">×</button>
-    </div>`;
-  } else {
-    list.innerHTML = '<span style="color:rgba(255,255,255,.15);font-size:12px;">暂无背景图片</span>';
+  try {
+    const r = await fetch(`${API}/api/backgrounds`).then(r => r.json());
+    const list = document.getElementById('bgList');
+    if (r.success && r.data.length) {
+      list.innerHTML = r.data.map(b => `
+        <div class="bg-item ${b.url === settings.bgImage ? 'active' : ''}" style="background-image:url(${b.url})" onclick="selectBg('${b.url}','${b.name}')">
+          <button class="del-bg" onclick="event.stopPropagation();deleteBgFile('${b.name}')">×</button>
+        </div>
+      `).join('');
+    } else {
+      list.innerHTML = '<span style="color:rgba(255,255,255,.15);font-size:12px;">暂无背景图片</span>';
+    }
+  } catch(e) {
+    document.getElementById('bgList').innerHTML = '<span style="color:rgba(255,255,255,.15);font-size:12px;">暂无背景图片</span>';
   }
 }
 
-function selectBg(el) {
+function selectBg(url) {
   document.querySelectorAll('.bg-item').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+  event.target.closest('.bg-item').classList.add('active');
+  settings.bgImage = url;
+  document.getElementById('s-bgType').value = 'image';
+  updateBgPreview();
 }
 
-async function deleteBg() {
-  settings.bgImage = '';
-  document.getElementById('s-bgType').value = 'color';
-  updateBgPreview();
+async function deleteBgFile(name) {
+  if (!confirm('确定删除该背景图片？')) return;
+  await fetch(`${API}/api/delete-bg`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+  if (settings.bgImage && settings.bgImage.includes(name)) {
+    settings.bgImage = '';
+    document.getElementById('s-bgType').value = 'color';
+    updateBgPreview();
+  }
   loadBgList();
-  await saveBackground();
-  showToast('背景已清除', 'success');
 }
 
 async function saveBackground() {
@@ -487,13 +661,131 @@ async function saveBackground() {
   else showToast('保存失败', 'error');
 }
 
+// ===== 音效设置 =====
+async function uploadAudio() {
+  const file = document.getElementById('audioFileInput').files[0];
+  if (!file) return;
+  const r = await fetch(`${API}/api/upload-audio`, {
+    method: 'POST', headers: { 'Content-Type': file.type },
+    body: await file.arrayBuffer(),
+  }).then(r => r.json());
+  if (r.success) {
+    showToast('音频上传成功', 'success');
+    settings.bgmUrl = r.url;
+    loadAudioList();
+    updateBgmPreview();
+  } else showToast('上传失败: ' + r.message, 'error');
+  document.getElementById('audioFileInput').value = '';
+}
+
+async function loadAudioList() {
+  try {
+    const r = await fetch(`${API}/api/audio-list`).then(r => r.json());
+    const list = document.getElementById('audioList');
+    if (r.success && r.data.length) {
+      list.innerHTML = r.data.map(a => `
+        <div class="audio-item ${a.url === settings.bgmUrl ? 'active' : ''}">
+          <span class="name">${a.name}</span>
+          <button class="btn btn-sm ${a.url === settings.bgmUrl ? 'btn-success' : 'btn-outline'}" onclick="selectBgm('${a.url}')">
+            ${a.url === settings.bgmUrl ? '✓ 已选' : '使用'}
+          </button>
+          <audio src="${a.url}" preload="none"></audio>
+        </div>
+      `).join('');
+    } else {
+      list.innerHTML = '<span style="color:rgba(255,255,255,.15);font-size:12px;">暂无上传音乐</span>';
+    }
+  } catch(e) {}
+}
+
+function selectBgm(url) {
+  settings.bgmUrl = url;
+  loadAudioList();
+  updateBgmPreview();
+}
+
+function updateBgmPreview() {
+  const el = document.getElementById('bgmPreview');
+  if (settings.bgmUrl) {
+    el.innerHTML = `<audio controls src="${settings.bgmUrl}" style="width:100%;"></audio>`;
+  } else {
+    el.innerHTML = '<span style="color:rgba(255,255,255,.2);font-size:13px;">未选择BGM</span>';
+  }
+}
+
+async function saveAudio() {
+  const body = {
+    bgmUrl: settings.bgmUrl || '',
+    bgmEnabled: document.getElementById('s-bgmEnabled').checked,
+  };
+  const r = await fetch(`${API}/api/settings`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  }).then(r => r.json());
+  if (r.success) { showToast('音效设置已保存', 'success'); settings = { ...settings, ...body }; }
+  else showToast('保存失败', 'error');
+}
+
+// ===== 二维码设置 =====
+async function loadQrPreview() {
+  const el = document.getElementById('qrPreviewArea');
+  try {
+    const r = await fetch(`${API}/api/qrcode`).then(r => r.json());
+    if (r.success) {
+      if (r.isCustom) {
+        el.innerHTML = `
+          <p style="font-size:13px;color:#2ed573;margin-bottom:8px;">✅ 当前使用自定义二维码</p>
+          <img src="${r.qrcode}" class="qr-preview">
+        `;
+      } else {
+        el.innerHTML = `
+          <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:8px;">当前使用默认二维码（扫码进入参与页）</p>
+          <img src="${r.qrcode}" class="qr-preview">
+        `;
+      }
+    }
+  } catch(e) {
+    el.innerHTML = '<span style="color:rgba(255,255,255,.2);font-size:13px;">加载失败</span>';
+  }
+}
+
+async function uploadQr() {
+  const file = document.getElementById('qrFileInput').files[0];
+  if (!file) return;
+  const r = await fetch(`${API}/api/upload-qr`, {
+    method: 'POST', headers: { 'Content-Type': file.type },
+    body: await file.arrayBuffer(),
+  }).then(r => r.json());
+  if (r.success) {
+    showToast('二维码上传成功，大屏端将自动显示', 'success');
+    settings.qrImage = r.url;
+    // Save to settings
+    await fetch(`${API}/api/settings`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ qrImage: r.url }),
+    });
+    loadQrPreview();
+  } else showToast('上传失败: ' + r.message, 'error');
+  document.getElementById('qrFileInput').value = '';
+}
+
+async function clearQr() {
+  if (!confirm('恢复默认二维码？')) return;
+  settings.qrImage = '';
+  await fetch(`${API}/api/settings`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ qrImage: '' }),
+  });
+  showToast('已恢复默认二维码', 'success');
+  loadQrPreview();
+}
+
 // ===== 奖项管理 =====
 async function loadPrizes() {
   const r = await fetch(`${API}/api/prizes`).then(r => r.json());
   if (!r.success) return;
   tempPrizes = JSON.parse(JSON.stringify(r.data));
   renderPrizes();
-  loadWinners();
 }
 
 function renderPrizes() {

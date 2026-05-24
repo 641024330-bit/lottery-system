@@ -8,6 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'data.json');
 const BG_DIR = path.join(__dirname, 'public', 'backgrounds');
+const AUDIO_DIR = path.join(__dirname, 'public', 'audio');
+const QR_DIR = path.join(__dirname, 'public', 'qrcodes');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -25,8 +27,10 @@ function getLocalIP() {
 const HOST = process.env.HOST || getLocalIP();
 const BASE_URL = process.env.RENDER_EXTERNAL_URL || process.env.BASE_URL || `http://${HOST}:${PORT}`;
 
-// 确保背景目录存在
+// 确保目录存在
 fs.mkdirSync(BG_DIR, { recursive: true });
+fs.mkdirSync(AUDIO_DIR, { recursive: true });
+fs.mkdirSync(QR_DIR, { recursive: true });
 
 // ===== 默认设置 =====
 const DEFAULT_SETTINGS = {
@@ -37,7 +41,12 @@ const DEFAULT_SETTINGS = {
   bgColor: '#0f0f23',
   bgImage: '',
   bgOverlay: 0.6,
-  animationStyle: 'classic', // classic | modern | minimal
+  animationStyle: 'roll', // roll | card | slot | highlight
+  drawMode: 'single', // single | batch
+  batchCount: 3,
+  bgmUrl: '',
+  bgmEnabled: true,
+  qrImage: '',
   wechatAppId: 'wx1521cfbc808a2cdc',
   wechatAppSecret: 'abbfce5b51b93a6f88bfedae4f06930e',
   joinMethod: 'form', // form | wechat | both
@@ -56,12 +65,73 @@ function saveData(data) {
 }
 
 // ===== 上传背景图 =====
-app.post('/api/upload-bg', express.raw({ limit: '5mb', type: 'image/*' }), (req, res) => {
+app.post('/api/upload-bg', express.raw({ limit: '10mb', type: 'image/*' }), (req, res) => {
   try {
     const ext = path.extname(req.headers['content-type'] === 'image/png' ? '.png' : '.jpg') || '.jpg';
     const name = 'bg_' + Date.now() + ext;
     fs.writeFileSync(path.join(BG_DIR, name), req.body);
     res.json({ success: true, url: `/backgrounds/${name}`, name });
+  } catch (e) {
+    res.json({ success: false, message: e.message });
+  }
+});
+
+// ===== 获取背景列表 =====
+app.get('/api/backgrounds', (req, res) => {
+  try {
+    const files = fs.readdirSync(BG_DIR).filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
+    res.json({ success: true, data: files.map(f => ({ name: f, url: `/backgrounds/${f}` })) });
+  } catch (e) {
+    res.json({ success: false, data: [] });
+  }
+});
+
+// ===== 删除背景 =====
+app.post('/api/delete-bg', (req, res) => {
+  try {
+    const { name } = req.body;
+    if (name) fs.unlinkSync(path.join(BG_DIR, name));
+    res.json({ success: true });
+  } catch (e) {
+    res.json({ success: false, message: e.message });
+  }
+});
+
+// ===== 上传音频(BGM) =====
+app.post('/api/upload-audio', express.raw({ limit: '20mb', type: 'audio/*' }), (req, res) => {
+  try {
+    const ct = req.headers['content-type'] || '';
+    const extMap = { 'audio/mpeg': '.mp3', 'audio/wav': '.wav', 'audio/ogg': '.ogg', 'audio/mp4': '.mp4', 'audio/aac': '.aac', 'audio/flac': '.flac' };
+    const ext = extMap[ct] || '.mp3';
+    const name = 'bgm_' + Date.now() + ext;
+    fs.writeFileSync(path.join(AUDIO_DIR, name), req.body);
+    res.json({ success: true, url: `/audio/${name}`, name });
+  } catch (e) {
+    res.json({ success: false, message: e.message });
+  }
+});
+
+// ===== 获取音频列表 =====
+app.get('/api/audio-list', (req, res) => {
+  try {
+    const files = fs.readdirSync(AUDIO_DIR).filter(f => /\.(mp3|wav|ogg|mp4|aac|flac)$/i.test(f));
+    res.json({ success: true, data: files.map(f => ({ name: f, url: `/audio/${f}` })) });
+  } catch (e) {
+    res.json({ success: false, data: [] });
+  }
+});
+
+// ===== 上传自定义二维码 =====
+app.post('/api/upload-qr', express.raw({ limit: '5mb', type: 'image/*' }), (req, res) => {
+  try {
+    // 删除旧二维码
+    if (fs.existsSync(QR_DIR)) {
+      fs.readdirSync(QR_DIR).forEach(f => fs.unlinkSync(path.join(QR_DIR, f)));
+    }
+    const ext = req.headers['content-type'] === 'image/png' ? '.png' : '.jpg';
+    const name = 'qr_custom' + ext;
+    fs.writeFileSync(path.join(QR_DIR, name), req.body);
+    res.json({ success: true, url: `/qrcodes/${name}`, name });
   } catch (e) {
     res.json({ success: false, message: e.message });
   }
@@ -226,7 +296,7 @@ app.get('/api/prizes', (req, res) => {
 
 // ===== API: 抽奖 =====
 app.post('/api/draw', (req, res) => {
-  const { prizeName } = req.body;
+  const { prizeName, count: reqCount } = req.body;
   const data = loadData();
   const prize = data.prizes.find(p => p.name === prizeName);
   if (!prize) return res.json({ success: false, message: '奖项不存在' });
@@ -239,8 +309,10 @@ app.post('/api/draw', (req, res) => {
   const available = data.participants.filter(p => !allWinners.has(p.id));
   if (available.length === 0) return res.json({ success: false, message: '没有可抽奖的参与者' });
 
+  const drawCount = reqCount ? Math.min(reqCount, remaining, available.length) : 1;
+
   const shuffled = [...available].sort(() => Math.random() - 0.5);
-  const winners = shuffled.slice(0, Math.min(1, remaining));
+  const winners = shuffled.slice(0, drawCount);
 
   winners.forEach(w => {
     prize.winners.push({ id: w.id, nickname: w.nickname, phone: w.phone, avatar: w.avatar || '' });
@@ -300,7 +372,11 @@ function getPublicUrl(req) {
 app.get('/api/wechat/qrcode', async (req, res) => {
   try {
     const data = loadData();
-    const { wechatAppId } = data.settings || {};
+    const { wechatAppId, qrImage } = data.settings || {};
+    // 如果有自定义二维码图片，优先返回
+    if (qrImage) {
+      return res.json({ success: true, qrcode: qrImage, url: '', appId: wechatAppId || '', isCustom: true });
+    }
     const url = `${getPublicUrl(req)}/join.html?wechat=1`;
     const qr = await QRCode.toDataURL(url, { width: 400, margin: 2, color: { dark: '#1a1a2e', light: '#ffffff' } });
     res.json({ success: true, qrcode: qr, url, appId: wechatAppId || '' });
@@ -312,6 +388,12 @@ app.get('/api/wechat/qrcode', async (req, res) => {
 // ===== API: 二维码 =====
 app.get('/api/qrcode', async (req, res) => {
   try {
+    const data = loadData();
+    const { qrImage } = data.settings || {};
+    // 如果有自定义二维码图片，优先返回
+    if (qrImage) {
+      return res.json({ success: true, qrcode: qrImage, url: '', isCustom: true });
+    }
     const url = `${getPublicUrl(req)}/join.html`;
     const qr = await QRCode.toDataURL(url, { width: 400, margin: 2, color: { dark: '#1a1a2e', light: '#ffffff' } });
     res.json({ success: true, qrcode: qr, url });

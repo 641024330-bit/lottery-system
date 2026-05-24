@@ -16,27 +16,27 @@ body::before {
   content: ''; position: fixed; inset: 0;
   background: rgba(0,0,0,var(--bg-overlay, 0.6)); pointer-events: none; z-index: 0;
 }
-.header, .main, .settings-btn { position: relative; z-index: 1; }
+.header, .main, .settings-btn, .bgm-bar { position: relative; z-index: 1; }
 
 .header {
   background: linear-gradient(135deg, color-mix(in srgb, var(--bg-color, #0f0f23) 80%, transparent), transparent);
-  padding: 14px 28px; display: flex; align-items: center;
+  padding: 12px 28px; display: flex; align-items: center;
   border-bottom: 1px solid color-mix(in srgb, var(--primary, #ffd700) 20%, transparent);
   flex-shrink: 0;
 }
-.header h1 { font-size: 24px; color: var(--primary, #ffd700); letter-spacing: 4px; margin-right: auto; }
+.header h1 { font-size: 22px; color: var(--primary, #ffd700); letter-spacing: 4px; margin-right: auto; }
 .header .info { display: flex; gap: 20px; font-size: 13px; color: rgba(255,255,255,.5); }
 
 .main { flex: 1; display: flex; overflow: hidden; }
-.left { flex: 1; display: flex; flex-direction: column; padding: 16px; }
-.right { width: 320px; background: rgba(0,0,0,.3); padding: 16px; display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,.05); }
+.left { flex: 1; display: flex; flex-direction: column; padding: 12px 16px; position: relative; overflow: hidden; }
+.right { width: 320px; background: rgba(0,0,0,.3); padding: 16px; display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,.05); overflow-y: auto; }
 
 /* 奖品Tab */
-.prize-tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.prize-tabs { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; flex-shrink: 0; }
 .prize-tab {
-  padding: 10px 22px; border-radius: 8px; border: 1px solid rgba(255,255,255,.1);
+  padding: 8px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,.1);
   background: rgba(255,255,255,.05); color: #fff; cursor: pointer;
-  font-size: 14px; transition: .2s; text-align: center;
+  font-size: 13px; transition: .2s; text-align: center;
 }
 .prize-tab:hover { border-color: color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); }
 .prize-tab.active { background: var(--primary, #ffd700); color: #1a1a2e; border-color: var(--primary, #ffd700); font-weight: bold; }
@@ -47,22 +47,15 @@ body::before {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center; position: relative;
 }
-.draw-area::before {
-  content: ''; position: absolute; width: 150%; height: 150%;
-  background: conic-gradient(from 0deg, transparent, color-mix(in srgb, var(--primary, #ffd700) 2%, transparent), transparent, color-mix(in srgb, var(--primary, #ffd700) 2%, transparent), transparent);
-  animation: rotate 30s linear infinite; pointer-events: none;
-}
-@keyframes rotate { to { transform: rotate(360deg); } }
 
-.prize-label { font-size: 20px; color: rgba(255,255,255,.4); z-index: 1; }
-.prize-name { font-size: 42px; color: var(--primary, #ffd700); font-weight: bold; margin-bottom: 16px; z-index: 1; text-shadow: 0 0 30px color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); }
-
+/* ===== ROLL 动画 ===== */
 .roll-box {
   width: 60%; max-width: 600px; height: 140px;
   border: 2px solid color-mix(in srgb, var(--primary, #ffd700) 30%, transparent);
   border-radius: 14px; overflow: hidden; position: relative; z-index: 1;
-  background: rgba(0,0,0,.5); backdrop-filter: blur(10px);
+  background: rgba(0,0,0,.5); backdrop-filter: blur(10px); display: none;
 }
+.anim-roll .roll-box { display: block; }
 .roll-track { position: absolute; left: 0; right: 0; transition: none; }
 .roll-item {
   height: 140px; display: flex; align-items: center; justify-content: center;
@@ -74,9 +67,113 @@ body::before {
   50% { transform: scale(1.15); text-shadow: 0 0 60px color-mix(in srgb, var(--primary, #ffd700) 80%, transparent); }
 }
 
-.actions { z-index: 1; margin-top: 24px; display: flex; gap: 16px; }
+/* ===== CARD 翻牌动画 ===== */
+.card-area {
+  display: none; flex-wrap: wrap; justify-content: center; gap: 16px;
+  perspective: 1200px; z-index: 1; padding: 20px;
+}
+.anim-card .card-area { display: flex; }
+.card-el {
+  width: 160px; height: 200px; position: relative; cursor: default;
+  transform-style: preserve-3d; transition: transform .6s ease;
+}
+.card-el .card-face {
+  position: absolute; inset: 0; border-radius: 14px;
+  backface-visibility: hidden; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: bold; border: 2px solid;
+}
+.card-el .card-back {
+  background: linear-gradient(135deg, var(--primary, #ffd700), color-mix(in srgb, var(--primary, #ffd700) 60%, #000));
+  border-color: var(--primary, #ffd700); transform: rotateY(0deg);
+  font-size: 36px; color: rgba(255,255,255,.6);
+}
+.card-el .card-front {
+  background: rgba(0,0,0,.7); border-color: var(--primary, #ffd700);
+  transform: rotateY(180deg); color: var(--primary, #ffd700); font-size: 24px;
+  backdrop-filter: blur(10px);
+}
+.card-el.flipped { transform: rotateY(180deg); }
+.card-el.winner-card .card-front { color: #fff; font-size: 28px; text-shadow: 0 0 20px var(--primary, #ffd700); }
+.card-el.shuffling { animation: cardShuffle .15s ease-in-out infinite alternate; }
+@keyframes cardShuffle {
+  0% { transform: translateY(0) rotateY(0deg); }
+  25% { transform: translateY(-8px) rotateY(20deg); }
+  75% { transform: translateY(8px) rotateY(-20deg); }
+  100% { transform: translateY(0) rotateY(0deg); }
+}
+.card-el.zoom-winner {
+  animation: cardZoom .8s ease forwards;
+  z-index: 10;
+}
+@keyframes cardZoom {
+  0% { transform: rotateY(180deg) scale(1); }
+  50% { transform: rotateY(180deg) scale(1.3); box-shadow: 0 0 80px var(--primary, #ffd700); }
+  100% { transform: rotateY(180deg) scale(1.5); box-shadow: 0 0 120px var(--primary, #ffd700); }
+}
+
+/* ===== SLOT 老虎机 ===== */
+.slot-area {
+  display: none; gap: 12px; justify-content: center; z-index: 1; width: 100%;
+}
+.anim-slot .slot-area { display: flex; }
+.slot-col {
+  width: 200px; height: 200px; overflow: hidden; position: relative;
+  border: 2px solid var(--primary, #ffd700); border-radius: 14px;
+  background: rgba(0,0,0,.6); backdrop-filter: blur(10px);
+}
+.slot-col::before, .slot-col::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 40px; z-index: 2;
+  pointer-events: none;
+}
+.slot-col::before { top: 0; background: linear-gradient(to bottom, rgba(0,0,0,.8), transparent); }
+.slot-col::after { bottom: 0; background: linear-gradient(to top, rgba(0,0,0,.8), transparent); }
+.slot-track { position: absolute; left: 0; right: 0; }
+.slot-item {
+  height: 200px; display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: bold; color: #fff;
+}
+.slot-winner-row {
+  position: absolute; top: 50%; left: 0; right: 0; height: 200px;
+  border-top: 2px solid var(--primary, #ffd700); border-bottom: 2px solid var(--primary, #ffd700);
+  transform: translateY(-100px); z-index: 1; pointer-events: none;
+}
+.slot-highlight {
+  position: absolute; left: 0; right: 0; height: 200px; top: 50%;
+  transform: translateY(-100px); z-index: 1;
+  background: color-mix(in srgb, var(--primary, #ffd700) 8%, transparent);
+  border-top: 2px solid var(--primary, #ffd700); border-bottom: 2px solid var(--primary, #ffd700);
+}
+
+/* ===== HIGHLIGHT 聚光灯 ===== */
+.highlight-area {
+  display: none; position: relative; width: 100%; height: 400px;
+  z-index: 1; overflow: hidden;
+}
+.anim-highlight .highlight-area { display: block; }
+.hl-tag {
+  position: absolute; padding: 10px 20px; border-radius: 10px;
+  font-size: 18px; font-weight: bold; border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.05); transition: all .3s ease;
+  white-space: nowrap; cursor: default; user-select: none;
+}
+.hl-tag.hl-winner {
+  border-color: var(--primary, #ffd700); background: var(--primary, #ffd700);
+  color: #1a1a2e; font-size: 48px; z-index: 5;
+  box-shadow: 0 0 80px color-mix(in srgb, var(--primary, #ffd700) 50%, transparent);
+  animation: hlPulse .5s ease-in-out 3;
+}
+@keyframes hlPulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* ===== 通用 ===== */
+.prize-label { font-size: 18px; color: rgba(255,255,255,.4); z-index: 1; flex-shrink: 0; }
+.prize-name { font-size: 36px; color: var(--primary, #ffd700); font-weight: bold; z-index: 1; text-shadow: 0 0 30px color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); flex-shrink: 0; }
+
+.actions { z-index: 1; margin-top: 16px; display: flex; gap: 12px; flex-shrink: 0; }
 .btn-draw, .btn-reset {
-  padding: 14px 50px; font-size: 20px; border: none; border-radius: 12px;
+  padding: 12px 40px; font-size: 18px; border: none; border-radius: 12px;
   cursor: pointer; font-weight: bold; letter-spacing: 3px; transition: .2s;
 }
 .btn-draw { background: linear-gradient(135deg, var(--primary, #ffd700), color-mix(in srgb, var(--primary, #ffd700) 70%, #000)); color: #1a1a2e; }
@@ -85,25 +182,22 @@ body::before {
 .btn-reset { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.1); }
 .btn-reset:hover { background: rgba(255,255,255,.12); }
 
-/* 右侧 - 二维码面板 */
-.qr-box {
-  text-align: center; padding: 14px; background: #fff;
-  border-radius: 12px; margin-bottom: 12px;
+/* 右侧 */
+.qr-box { text-align: center; padding: 14px; background: #fff;
+  border-radius: 12px; margin-bottom: 12px; flex-shrink: 0;
 }
-.qr-box img { width: 200px; height: 200px; display: block; margin: 0 auto; }
-.qr-url {
-  font-size: 11px; color: #666; word-break: break-all; margin-top: 6px;
+.qr-box img { width: 180px; height: 180px; display: block; margin: 0 auto; object-fit: contain; }
+.qr-url { font-size: 11px; color: #666; word-break: break-all; margin-top: 6px;
   background: #f5f5f5; padding: 6px 10px; border-radius: 6px;
 }
 .qr-hint { font-size: 13px; color: #333; font-weight: bold; margin: 4px 0; }
 
-.section-title { font-size: 13px; color: var(--primary, #ffd700); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.section-title { font-size: 13px; color: var(--primary, #ffd700); margin-bottom: 8px; display: flex; justify-content: space-between; flex-shrink: 0; }
 .participant-list { flex: 1; overflow-y: auto; min-height: 0; }
 .participant-list::-webkit-scrollbar { width: 3px; }
 .participant-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
-.p-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 10px; border-radius: 6px; font-size: 13px;
+.p-item { display: flex; align-items: center; gap: 8px;
+  padding: 5px 10px; border-radius: 6px; font-size: 12px;
   background: rgba(255,255,255,.03); margin-bottom: 3px;
 }
 .p-item .phone { color: rgba(255,255,255,.3); font-size: 11px; margin-left: auto; }
@@ -117,27 +211,47 @@ body::before {
 .overlay.show { display: flex; }
 .winner-modal {
   background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
-  border: 2px solid var(--primary, #ffd700); border-radius: 24px; padding: 50px 70px;
+  border: 2px solid var(--primary, #ffd700); border-radius: 24px; padding: 40px 60px;
   text-align: center; animation: mi .4s ease-out;
   box-shadow: 0 0 80px color-mix(in srgb, var(--primary, #ffd700) 20%, transparent);
+  max-width: 90vw;
 }
 @keyframes mi { from { transform: scale(.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .winner-modal h2 { font-size: 28px; color: var(--primary, #ffd700); margin-bottom: 8px; }
-.winner-modal .name { font-size: 72px; color: #fff; font-weight: bold; margin: 16px 0; }
+.winner-modal .names { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 16px 0; }
+.winner-modal .name-item { font-size: 48px; color: #fff; font-weight: bold; padding: 8px 20px; }
 .winner-modal .ptag { font-size: 16px; color: rgba(255,255,255,.5); }
 .winner-modal .btn-close {
-  margin-top: 24px; padding: 10px 36px; border-radius: 8px;
+  margin-top: 20px; padding: 10px 36px; border-radius: 8px;
   background: var(--primary, #ffd700); color: #1a1a2e; border: none; font-size: 16px; cursor: pointer; font-weight: bold;
 }
 
 /* 中奖名单 */
-.winner-section { margin-top: auto; border-top: 1px solid rgba(255,255,255,.05); padding-top: 8px; }
+.winner-section { margin-top: auto; border-top: 1px solid rgba(255,255,255,.05); padding-top: 8px; flex-shrink: 0; }
 .wtags { display: flex; flex-wrap: wrap; gap: 4px; max-height: 80px; overflow-y: auto; }
 .wtag { font-size: 11px; padding: 2px 8px; background: color-mix(in srgb, var(--primary, #ffd700) 10%, transparent); border-radius: 10px; color: var(--primary, #ffd700); }
 
+/* BGM 控制条 */
+.bgm-bar {
+  position: fixed; bottom: 20px; right: 20px; z-index: 50;
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(0,0,0,.6); backdrop-filter: blur(10px);
+  padding: 8px 16px; border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.bgm-bar.hidden { display: none; }
+.bgm-btn {
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: var(--primary, #ffd700); color: #1a1a2e;
+  cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  transition: .2s;
+}
+.bgm-btn:hover { transform: scale(1.1); }
+.bgm-label { font-size: 11px; color: rgba(255,255,255,.4); }
+
 /* 设置按钮 */
 .settings-btn {
-  position: fixed; top: 14px; right: 16px; z-index: 10;
+  position: fixed; top: 12px; right: 16px; z-index: 10;
   padding: 6px 14px; background: rgba(255,255,255,.05); color: rgba(255,255,255,.4);
   border: 1px solid rgba(255,255,255,.08); border-radius: 6px; cursor: pointer; font-size: 12px;
 }
@@ -169,12 +283,16 @@ body::before {
 .prize-item .del { padding: 4px 10px; background: rgba(255,71,87,.2); color: #ff4757; border: none; border-radius: 4px; cursor: pointer; }
 .add-prize { padding: 6px 16px; background: color-mix(in srgb, var(--primary, #ffd700) 10%, transparent); color: var(--primary, #ffd700); border: 1px dashed color-mix(in srgb, var(--primary, #ffd700) 30%, transparent); border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 4px; }
 
-.anim-modern .roll-box { border-radius: 4px; border-width: 1px; }
-.anim-modern .roll-item { font-weight: 500; letter-spacing: 2px; }
-.anim-modern .btn-draw { border-radius: 4px; letter-spacing: 1px; }
-.anim-minimal .roll-box { border: none; background: rgba(255,255,255,.03); backdrop-filter: none; border-radius: 0; }
-.anim-minimal .roll-item { font-weight: 300; color: rgba(255,255,255,.8); }
-.anim-minimal .btn-draw { background: transparent; border: 1px solid var(--primary, #ffd700); border-radius: 2px; letter-spacing: 2px; color: var(--primary, #ffd700); }
+/* 批量滚动 */
+.draw-count-selector {
+  display: none; z-index: 1; margin-bottom: 8px;
+}
+.draw-count-selector.show { display: flex; align-items: center; gap: 8px; }
+.draw-count-selector label { font-size: 13px; color: rgba(255,255,255,.4); }
+.draw-count-selector select {
+  padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.05); color: #fff; font-size: 14px; outline: none;
+}
 
 @media (max-width: 768px) {
   .right { width: 240px; }
@@ -182,7 +300,11 @@ body::before {
   .roll-item { height: 100px; font-size: 32px; }
   .prize-name { font-size: 28px; }
   .winner-modal { padding: 30px 40px; }
-  .winner-modal .name { font-size: 48px; }
+  .winner-modal .name-item { font-size: 32px; }
+  .card-el { width: 120px; height: 160px; }
+  .card-el .card-face { font-size: 16px; }
+  .slot-col { width: 140px; height: 160px; }
+  .slot-item { height: 160px; font-size: 24px; }
 }
 </style>
 </head>
@@ -200,12 +322,40 @@ body::before {
 <div class="main">
   <div class="left">
     <div class="prize-tabs" id="prizeTabs"></div>
+
+    <div class="draw-count-selector" id="drawCountSelector">
+      <label>本次抽取</label>
+      <select id="drawCountInput">
+        <option value="1">1 人</option>
+        <option value="2">2 人</option>
+        <option value="3">3 人</option>
+        <option value="5">5 人</option>
+        <option value="10">10 人</option>
+      </select>
+    </div>
+
     <div class="draw-area">
-      <div class="prize-label">当前奖项</div>
+      <div class="prize-label" id="prizeLabel">当前奖项</div>
       <div class="prize-name" id="currentPrize">未设置</div>
+
+      <!-- ROLL -->
       <div class="roll-box" id="rollBox">
         <div class="roll-track" id="rollTrack"></div>
       </div>
+
+      <!-- CARD -->
+      <div class="card-area" id="cardArea"></div>
+
+      <!-- SLOT -->
+      <div class="slot-area" id="slotArea">
+        <div class="slot-col" id="slotCol0"><div class="slot-track" id="slotTrack0"></div><div class="slot-highlight"></div></div>
+        <div class="slot-col" id="slotCol1"><div class="slot-track" id="slotTrack1"></div><div class="slot-highlight"></div></div>
+        <div class="slot-col" id="slotCol2"><div class="slot-track" id="slotTrack2"></div><div class="slot-highlight"></div></div>
+      </div>
+
+      <!-- HIGHLIGHT -->
+      <div class="highlight-area" id="hlArea"></div>
+
       <div class="actions">
         <button class="btn-draw" id="btnDraw" onclick="toggleDraw()">开始抽奖</button>
         <button class="btn-reset" onclick="resetAll()">🔄 重置</button>
@@ -213,7 +363,6 @@ body::before {
     </div>
   </div>
 
-  <!-- 右侧 -->
   <div class="right">
     <div class="qr-box">
       <img id="qrImg" src="/api/qrcode.png" alt="QR Code">
@@ -235,12 +384,18 @@ body::before {
   </div>
 </div>
 
+<!-- BGM 控制 -->
+<div class="bgm-bar hidden" id="bgmBar">
+  <button class="bgm-btn" id="bgmBtn" onclick="toggleBgm()">▶</button>
+  <span class="bgm-label">BGM</span>
+</div>
+
 <!-- 中奖弹窗 -->
 <div class="overlay" id="winnerOverlay">
   <div class="winner-modal">
     <h2>🎉 恭喜中奖</h2>
     <div class="ptag" id="modalPrize"></div>
-    <div class="name" id="modalName"></div>
+    <div class="names" id="modalNames"></div>
     <button class="btn-close" onclick="closeModal()">确 定</button>
   </div>
 </div>
@@ -266,6 +421,8 @@ const API = '';
 let state = { prizes: [], currentIdx: 0, isRolling: false, timer: null, pollTimer: null };
 let tempPrizes = [];
 let settings = {};
+let bgmAudio = null;
+let animState = {};
 
 // ===== 加载设置 =====
 async function loadSettings() {
@@ -288,7 +445,6 @@ function applySettings(s) {
   root.style.setProperty('--bg-color', bgColor);
   root.style.setProperty('--bg-overlay', overlay);
 
-  // Background image
   if (s.bgType === 'image' && s.bgImage) {
     document.body.style.backgroundImage = `url(${s.bgImage})`;
   } else {
@@ -296,32 +452,82 @@ function applySettings(s) {
     document.body.style.backgroundColor = bgColor;
   }
 
-  // Title
   if (s.title) {
     document.getElementById('titleText').textContent = '🎯 ' + s.title;
     document.getElementById('pageTitle').textContent = s.title + ' - 大屏端';
   }
 
   // Animation style
-  document.body.classList.remove('anim-classic', 'anim-modern', 'anim-minimal');
-  if (s.animationStyle && s.animationStyle !== 'classic') {
-    document.body.classList.add('anim-' + s.animationStyle);
-  }
+  document.body.classList.remove('anim-roll', 'anim-card', 'anim-slot', 'anim-highlight');
+  const anim = s.animationStyle || 'roll';
+  document.body.classList.add('anim-' + anim);
 
-  // QR hint text
-  if (s.joinMethod === 'wechat') {
-    document.querySelector('.qr-hint').textContent = '📱 微信扫码授权参与抽奖';
+  // QR hint
+  const hint = document.querySelector('.qr-hint');
+  if (s.joinMethod === 'wechat') hint.textContent = '📱 微信扫码授权参与';
+  else hint.textContent = '📱 微信扫码参与抽奖';
+
+  // Draw mode
+  const dSel = document.getElementById('drawCountSelector');
+  if (s.drawMode === 'batch') dSel.classList.add('show');
+  else dSel.classList.remove('show');
+
+  // BGM
+  setupBgm(s);
+}
+
+// ===== BGM =====
+function setupBgm(s) {
+  const bar = document.getElementById('bgmBar');
+  if (s.bgmUrl && s.bgmEnabled !== false) {
+    bar.classList.remove('hidden');
+    if (!bgmAudio || bgmAudio.src !== s.bgmUrl) {
+      if (bgmAudio) { bgmAudio.pause(); bgmAudio = null; }
+      bgmAudio = new Audio(s.bgmUrl);
+      bgmAudio.loop = true;
+      bgmAudio.volume = 0.3;
+      bgmAudio.addEventListener('ended', () => { document.getElementById('bgmBtn').textContent = '▶'; });
+    }
   } else {
-    document.querySelector('.qr-hint').textContent = '📱 微信扫码参与抽奖';
+    bar.classList.add('hidden');
+    if (bgmAudio) { bgmAudio.pause(); bgmAudio = null; }
   }
+}
+
+function toggleBgm() {
+  if (!bgmAudio) return;
+  if (bgmAudio.paused) {
+    bgmAudio.play().catch(() => {});
+    document.getElementById('bgmBtn').textContent = '⏸';
+  } else {
+    bgmAudio.pause();
+    document.getElementById('bgmBtn').textContent = '▶';
+  }
+}
+
+function tryPlayBgm() {
+  if (bgmAudio && bgmAudio.paused && settings.bgmEnabled !== false) {
+    bgmAudio.play().catch(() => {});
+    document.getElementById('bgmBtn').textContent = '⏸';
+  }
+}
+
+function stopBgm() {
+  if (bgmAudio) { bgmAudio.pause(); bgmAudio.currentTime = 0; }
+  document.getElementById('bgmBtn').textContent = '▶';
 }
 
 // ===== 初始化 =====
 async function init() {
   await loadSettings();
-
   fetch(`${API}/api/qrcode`).then(r=>r.json()).then(r=>{
-    if(r.success) document.getElementById('qrUrl').textContent = r.url;
+    if(r.success) {
+      document.getElementById('qrUrl').textContent = r.url || '自定义二维码';
+      if (r.isCustom || settings.qrImage) {
+        document.getElementById('qrImg').src = r.qrcode;
+        document.querySelector('.qr-hint').textContent = '📱 扫码参与抽奖';
+      }
+    }
   });
   await loadPrizes();
   renderPrizes();
@@ -399,7 +605,6 @@ async function pollData() {
       `).join('');
     }
 
-    // winner tags
     const tags = document.getElementById('winnerTags');
     if (wr.success) {
       const items = wr.data.flatMap(p => p.winners.map(w => ({ prize: p.name, name: w.nickname })));
@@ -410,10 +615,14 @@ async function pollData() {
   }
 }
 
-// ===== 抽奖 =====
+// ===== 抽奖主控 =====
 function toggleDraw() {
   if (state.isRolling) stopRoll();
   else startRoll();
+}
+
+function getDrawCount() {
+  return parseInt(document.getElementById('drawCountInput').value) || 1;
 }
 
 function startRoll() {
@@ -429,20 +638,13 @@ function startRoll() {
 
     state.isRolling = true;
     document.getElementById('btnDraw').textContent = '停！';
+    tryPlayBgm();
 
-    const track = document.getElementById('rollTrack');
-    const h = document.getElementById('rollBox').clientHeight || 140;
-    const items = [];
-    for (let i = 0; i < 40; i++) items.push(av[i % av.length].nickname);
-    track.innerHTML = items.map(n => `<div class="roll-item">${n}</div>`).join('');
-    track.style.transform = 'translateY(0px)';
-
-    let pos = 0;
-    state.timer = setInterval(() => {
-      pos -= 2;
-      if (Math.abs(pos) >= h) pos = 0;
-      track.style.transform = `translateY(${pos}px)`;
-    }, 50);
+    const anim = settings.animationStyle || 'roll';
+    if (anim === 'roll') startRollAnim(av);
+    else if (anim === 'card') startCardAnim(av);
+    else if (anim === 'slot') startSlotAnim(av);
+    else if (anim === 'highlight') startHighlightAnim(av);
   });
 }
 
@@ -453,32 +655,254 @@ function stopRoll() {
   const p = state.prizes[state.currentIdx];
   if (!p) return;
 
-  fetch(`${API}/api/draw`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prizeName: p.name }),
-  }).then(r=>r.json()).then(r => {
-    if (!r.success) { alert(r.message); document.getElementById('btnDraw').textContent = '开始抽奖'; return; }
+  const anim = settings.animationStyle || 'roll';
+  if (anim === 'roll') stopRollAnim(p);
+  else if (anim === 'card') stopCardAnim(p);
+  else if (anim === 'slot') stopSlotAnim(p);
+  else if (anim === 'highlight') stopHighlightAnim(p);
+}
+
+// ===== ROLL 动画 =====
+function startRollAnim(av) {
+  const track = document.getElementById('rollTrack');
+  const h = document.getElementById('rollBox').clientHeight || 140;
+  const items = [];
+  for (let i = 0; i < 40; i++) items.push(av[i % av.length].nickname);
+  track.innerHTML = items.map(n => `<div class="roll-item">${n}</div>`).join('');
+  track.style.transform = 'translateY(0px)';
+
+  let pos = 0;
+  state.timer = setInterval(() => {
+    pos -= 2;
+    if (Math.abs(pos) >= h) pos = 0;
+    track.style.transform = `translateY(${pos}px)`;
+  }, 50);
+}
+
+function stopRollAnim(prize) {
+  executeDraw(prize).then(winners => {
+    if (!winners.length) { document.getElementById('btnDraw').textContent = '开始抽奖'; return; }
+    document.querySelectorAll('.roll-item').forEach(el => {
+      if (winners.some(w => el.textContent.trim() === w.nickname)) el.classList.add('winner');
+    });
+    setTimeout(() => showWinnerModal(prize.name, winners), 800);
+  });
+}
+
+// ===== CARD 翻牌动画 =====
+function startCardAnim(av) {
+  const area = document.getElementById('cardArea');
+  const cards = av.slice(0, Math.min(12, av.length));
+  const count = getDrawCount();
+  // Mark first N as winner candidates
+  cards.forEach((c, i) => c._isWinner = i < count);
+  animState.cardWinners = cards.filter(c => c._isWinner);
+
+  area.innerHTML = cards.map((c, i) => `
+    <div class="card-el shuffling" data-idx="${i}">
+      <div class="card-face card-back">?</div>
+      <div class="card-face card-front">${c.nickname}</div>
+    </div>
+  `).join('');
+  animState.cardEls = area.querySelectorAll('.card-el');
+
+  // Shuffle effect
+  let shuffleCount = 0;
+  const maxShuffles = 15 + Math.floor(Math.random() * 10);
+  state.timer = setInterval(() => {
+    shuffleCount++;
+    const grid = area.querySelectorAll('.card-el');
+    const indices = Array.from({length: grid.length}, (_, i) => i);
+    // swap random cards
+    for (let s = 0; s < 3; s++) {
+      const a = Math.floor(Math.random() * indices.length);
+      let b = Math.floor(Math.random() * indices.length);
+      if (a === b) b = (a + 1) % indices.length;
+      [grid[a].style.order, grid[b].style.order] = [grid[b].style.order || 0, grid[a].style.order || 0];
+    }
+    if (shuffleCount >= maxShuffles) {
+      clearInterval(state.timer);
+      state.timer = null;
+      document.getElementById('btnDraw').click();
+    }
+  }, 200);
+}
+
+function stopCardAnim(prize) {
+  if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  executeDraw(prize, animState.cardWinners ? undefined : getDrawCount()).then(winners => {
+    if (!winners.length) { document.getElementById('btnDraw').textContent = '开始抽奖'; return; }
+    const names = new Set(winners.map(w => w.nickname));
+    const els = document.querySelectorAll('.card-el');
+    els.forEach(el => {
+      el.classList.remove('shuffling');
+      const front = el.querySelector('.card-front');
+      if (front && names.has(front.textContent.trim())) {
+        el.classList.add('flipped', 'winner-card');
+        setTimeout(() => el.classList.add('zoom-winner'), 400);
+      } else {
+        setTimeout(() => el.classList.add('flipped'), 200 + Math.random() * 600);
+      }
+    });
+    setTimeout(() => showWinnerModal(prize.name, winners), 1800);
+  });
+}
+
+// ===== SLOT 老虎机 =====
+function startSlotAnim(av) {
+  const cols = [0, 1, 2];
+  cols.forEach(ci => {
+    const track = document.getElementById('slotTrack' + ci);
+    const items = [];
+    for (let i = 0; i < 30; i++) items.push(av[i % av.length].nickname);
+    track.innerHTML = items.map(n => `<div class="slot-item">${n}</div>`).join('');
+    track.style.transform = 'translateY(0px)';
+  });
+
+  const speeds = [1.5, 2.5, 3.5];
+  const positions = [0, 0, 0];
+  const h = 200;
+  const targets = [Math.random() * 100, Math.random() * 100, Math.random() * 100];
+  animState.slot = { positions, speeds, targets, started: Date.now(), colStopped: [false, false, false] };
+
+  state.timer = setInterval(() => {
+    const elapsed = (Date.now() - animState.slot.started) / 1000;
+    cols.forEach(ci => {
+      if (animState.slot.colStopped[ci]) return;
+      // Each column stops at a different time
+      const stopTime = 0.8 + ci * 0.6;
+      if (elapsed > stopTime) {
+        // Slow down
+        animState.slot.speeds[ci] = Math.max(0.1, animState.slot.speeds[ci] - 0.05);
+        if (animState.slot.speeds[ci] <= 0.15) {
+          animState.slot.colStopped[ci] = true;
+          return;
+        }
+      }
+      animState.slot.positions[ci] -= animState.slot.speeds[ci];
+      if (Math.abs(animState.slot.positions[ci]) >= h) animState.slot.positions[ci] = 0;
+      document.getElementById('slotTrack' + ci).style.transform = `translateY(${animState.slot.positions[ci]}px)`;
+    });
+
+    if (animState.slot.colStopped.every(Boolean)) {
+      clearInterval(state.timer);
+      state.timer = null;
+      document.getElementById('btnDraw').click();
+    }
+  }, 30);
+}
+
+function stopSlotAnim(prize) {
+  if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  executeDraw(prize).then(winners => {
+    if (!winners.length) { document.getElementById('btnDraw').textContent = '开始抽奖'; return; }
+    const w = winners[0];
+    // Show winner on center of each column
+    [0, 1, 2].forEach(ci => {
+      const track = document.getElementById('slotTrack' + ci);
+      track.innerHTML = `<div class="slot-item" style="color:var(--primary,#ffd700);font-size:36px;animation:wf .5s ease-in-out 3;">${w.nickname}</div>`;
+      track.style.transform = 'translateY(0px)';
+    });
+    setTimeout(() => showWinnerModal(prize.name, winners), 1000);
+  });
+}
+
+// ===== HIGHLIGHT 聚光灯 =====
+function startHighlightAnim(av) {
+  const area = document.getElementById('hlArea');
+  const count = Math.min(av.length, 40);
+  const participants = av.slice(0, count);
+
+  area.innerHTML = participants.map((p, i) => {
+    const x = Math.random() * 80 + 5;
+    const y = Math.random() * 70 + 5;
+    const speed = 0.5 + Math.random() * 1.5;
+    const dx = (Math.random() > 0.5 ? 1 : -1) * speed;
+    const dy = (Math.random() > 0.5 ? 1 : -1) * speed;
+    return `<div class="hl-tag" data-idx="${i}" data-x="${x}" data-y="${y}" data-dx="${dx}" data-dy="${dy}" style="left:${x}%;top:${y}%;">${p.nickname}</div>`;
+  }).join('');
+
+  animState.hlTags = area.querySelectorAll('.hl-tag');
+
+  let frame = 0;
+  state.timer = setInterval(() => {
+    frame++;
+    animState.hlTags.forEach(el => {
+      let x = parseFloat(el.dataset.x) + parseFloat(el.dataset.dx) * 0.2;
+      let y = parseFloat(el.dataset.y) + parseFloat(el.dataset.dy) * 0.2;
+      if (x < 2 || x > 78) el.dataset.dx = -parseFloat(el.dataset.dx);
+      if (y < 2 || y > 62) el.dataset.dy = -parseFloat(el.dataset.dy);
+      x = Math.max(2, Math.min(78, x));
+      y = Math.max(2, Math.min(62, y));
+      el.dataset.x = x; el.dataset.y = y;
+      el.style.left = x + '%'; el.style.top = y + '%';
+      // Random flash
+      if (frame % 10 === 0) {
+        el.style.borderColor = Math.random() > 0.5 ? 'var(--primary, #ffd700)' : 'rgba(255,255,255,.1)';
+      }
+    });
+
+    if (frame > 150) {
+      clearInterval(state.timer);
+      state.timer = null;
+      document.getElementById('btnDraw').click();
+    }
+  }, 30);
+}
+
+function stopHighlightAnim(prize) {
+  if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  executeDraw(prize).then(winners => {
+    if (!winners.length) { document.getElementById('btnDraw').textContent = '开始抽奖'; return; }
+    const names = new Set(winners.map(w => w.nickname));
+    animState.hlTags.forEach(el => {
+      if (names.has(el.textContent.trim())) {
+        el.classList.add('hl-winner');
+      } else {
+        el.style.opacity = '0.1';
+        el.style.transition = 'opacity 1.5s ease';
+      }
+    });
+    setTimeout(() => showWinnerModal(prize.name, winners), 1200);
+  });
+}
+
+// ===== 执行抽奖 =====
+async function executeDraw(prize, countOverride) {
+  const count = countOverride || (settings.drawMode === 'batch' ? getDrawCount() : 1);
+  try {
+    const r = await fetch(`${API}/api/draw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prizeName: prize.name, count }),
+    }).then(r => r.json());
+    if (!r.success) { alert(r.message); document.getElementById('btnDraw').textContent = '开始抽奖'; return []; }
     if (r.winners.length) {
-      const w = r.winners[0];
-      document.querySelectorAll('.roll-item').forEach(el => {
-        if (el.textContent.trim() === w.nickname) el.classList.add('winner');
-      });
-      setTimeout(() => {
-        document.getElementById('modalName').textContent = w.nickname;
-        document.getElementById('modalPrize').textContent = `🏆 ${p.name}`;
-        document.getElementById('winnerOverlay').classList.add('show');
-      }, 800);
       setTimeout(async () => {
         await loadPrizes();
         renderPrizes();
-      }, 1000);
+      }, 500);
+      return r.winners;
     }
-  });
+    return [];
+  } catch(e) {
+    document.getElementById('btnDraw').textContent = '开始抽奖';
+    return [];
+  }
+}
+
+// ===== 中奖弹窗 =====
+function showWinnerModal(prizeName, winners) {
+  document.getElementById('modalPrize').textContent = `🏆 ${prizeName}`;
+  document.getElementById('modalNames').innerHTML = winners.map(w =>
+    `<div class="name-item">${w.nickname}</div>`
+  ).join('');
+  document.getElementById('winnerOverlay').classList.add('show');
 }
 
 function closeModal() {
   document.getElementById('winnerOverlay').classList.remove('show');
+  document.getElementById('btnDraw').textContent = '开始抽奖';
 }
 
 // ===== 设置面板 =====
@@ -527,6 +951,7 @@ async function resetAll() {
   if (state.isRolling) { clearInterval(state.timer); state.isRolling = false; }
   if (!confirm('确定重置所有抽奖数据？')) return;
   await fetch(`${API}/api/reset`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+  stopBgm();
   await loadPrizes();
   renderPrizes();
   toggleSettings();
