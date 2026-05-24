@@ -9,6 +9,9 @@ const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'data.json');
 const BG_DIR = path.join(__dirname, 'public', 'backgrounds');
 
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
 // ===== 获取对外IP =====
 function getLocalIP() {
   const nets = os.networkInterfaces();
