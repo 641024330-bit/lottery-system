@@ -10,6 +10,7 @@ const DATA_FILE = path.join(__dirname, 'data', 'data.json');
 const BG_DIR = path.join(__dirname, 'public', 'backgrounds');
 const AUDIO_DIR = path.join(__dirname, 'public', 'audio');
 const QR_DIR = path.join(__dirname, 'public', 'qrcodes');
+const AVATAR_DIR = path.join(__dirname, 'public', 'avatars');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -31,6 +32,7 @@ const BASE_URL = process.env.RENDER_EXTERNAL_URL || process.env.BASE_URL || `htt
 fs.mkdirSync(BG_DIR, { recursive: true });
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 fs.mkdirSync(QR_DIR, { recursive: true });
+fs.mkdirSync(AVATAR_DIR, { recursive: true });
 
 // ===== 默认设置 =====
 const DEFAULT_SETTINGS = {
@@ -132,6 +134,17 @@ app.post('/api/upload-qr', express.raw({ limit: '5mb', type: 'image/*' }), (req,
     const name = 'qr_custom' + ext;
     fs.writeFileSync(path.join(QR_DIR, name), req.body);
     res.json({ success: true, url: `/qrcodes/${name}`, name });
+  } catch (e) {
+    res.json({ success: false, message: e.message });
+  }
+});
+
+// ===== 小程序头像上传 =====
+app.post('/api/upload-avatar', express.raw({ limit: '2mb', type: 'image/*' }), (req, res) => {
+  try {
+    const name = 'avatar_' + Date.now() + '.png';
+    fs.writeFileSync(path.join(AVATAR_DIR, name), req.body);
+    res.json({ success: true, url: `/avatars/${name}` });
   } catch (e) {
     res.json({ success: false, message: e.message });
   }
