@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40rpx;
+}
+.logo { font-size: 120rpx; margin-bottom: 20rpx; }
+.title {
+  font-size: 48rpx; font-weight: 700;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16rpx;
+}
+.desc {
+  font-size: 28rpx; color: #8899aa;
+  margin-bottom: 80rpx;
+}
+.auth-btn {
+  width: 80%; height: 88rpx; line-height: 88rpx;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #1a1a2e; font-size: 32rpx; font-weight: 600;
+  border-radius: 44rpx; border: none;
+}
+.auth-btn::after { border: none; }
+.status {
+  margin-top: 40rpx; font-size: 28rpx; color: #ffd700;
+}

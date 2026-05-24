@@ -1,0 +1,11 @@
+<view class="container">
+  <view class="logo">🎯</view>
+  <view class="title">年会抽奖</view>
+  <view class="desc">授权后即可参与现场抽奖</view>
+
+  <button class="auth-btn" open-type="getUserInfo" bindgetuserinfo="onAuth">
+    微信授权参与
+  </button>
+
+  <view class="status" wx:if="{{status}}">{{status}}</view>
+</view>

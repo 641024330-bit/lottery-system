@@ -1,0 +1,15 @@
+{
+  "description": "年会抽奖 - 微信授权参与",
+  "packOptions": { "ignore": [] },
+  "setting": {
+    "bundle": false,
+    "userConfirmedBundleSwitch": false,
+    "urlCheck": false,
+    "scopeDataCheck": false
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.6.0",
+  "appid": "wx1521cfbc808a2cdc",
+  "projectname": "lottery-auth",
+  "condition": {}
+}

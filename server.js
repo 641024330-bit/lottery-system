@@ -257,6 +257,44 @@ app.post('/api/join', (req, res) => {
   res.json({ success: true, message: '参与成功！', user: { id: user.id, nickname: user.nickname } });
 });
 
+// ===== API: 小程序授权参与 =====
+app.post('/api/miniapp/join', async (req, res) => {
+  const { code, nickname, avatar } = req.body;
+  if (!code) return res.json({ success: false, message: '缺少code' });
+
+  const data = loadData();
+  const { wechatAppId, wechatAppSecret } = data.settings || {};
+
+  try {
+    const tokenRes = await fetch(
+      `https://api.weixin.qq.com/sns/jscode2session?appid=${wechatAppId}&secret=${wechatAppSecret}&js_code=${code}&grant_type=authorization_code`
+    );
+    const session = await tokenRes.json();
+
+    if (!session.openid) {
+      return res.json({ success: false, message: '登录失败' });
+    }
+
+    if (data.participants.some(p => p.openid === session.openid)) {
+      return res.json({ success: false, message: '您已经参与过了' });
+    }
+
+    const user = {
+      id: 'u_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+      nickname: nickname || '微信用户',
+      phone: '',
+      avatar: avatar || '',
+      openid: session.openid,
+      joinTime: new Date().toISOString(),
+    };
+    data.participants.push(user);
+    saveData(data);
+    res.json({ success: true, message: '参与成功！' });
+  } catch (e) {
+    res.json({ success: false, message: '服务器错误' });
+  }
+});
+
 // ===== API: 参与者列表 =====
 app.get('/api/participants', (req, res) => {
   const data = loadData();
