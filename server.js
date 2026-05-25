@@ -13,6 +13,10 @@ const QR_DIR = path.join(__dirname, 'public', 'qrcodes');
 const AVATAR_DIR = path.join(__dirname, 'public', 'avatars');
 
 app.use(express.json());
+// 显式路由确保admin.html被正确服务
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ===== 获取对外IP =====
