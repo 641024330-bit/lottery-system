@@ -7,137 +7,201 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-  background: #0f0f23; color: #fff; min-height: 100vh;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #0a0a1a; color: #fff; min-height: 100vh;
 }
+
+/* ===== 侧栏 ===== */
 .sidebar {
   position: fixed; left: 0; top: 0; bottom: 0; width: 200px;
-  background: #1a1a3e; padding: 20px 0; border-right: 1px solid rgba(255,255,255,.05);
-  z-index: 10;
+  background: linear-gradient(180deg, #12122a 0%, #0d0d1f 100%);
+  padding: 20px 0; border-right: 1px solid rgba(255,255,255,.04);
+  z-index: 10; overflow-y: auto;
 }
-.sidebar .brand { padding: 16px 20px; font-size: 16px; color: #ffd700; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 8px; }
+.sidebar .brand {
+  padding: 16px 20px; font-size: 15px; font-weight: 800; letter-spacing: 2px;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  border-bottom: 1px solid rgba(255,255,255,.04); margin-bottom: 6px;
+}
 .sidebar a {
-  display: block; padding: 12px 20px; color: rgba(255,255,255,.5); text-decoration: none;
-  font-size: 14px; transition: .2s; cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px; color: rgba(255,255,255,.35); text-decoration: none;
+  font-size: 13px; transition: all .2s ease; cursor: pointer;
+  border-left: 2px solid transparent;
 }
-.sidebar a:hover, .sidebar a.active { color: #fff; background: rgba(255,255,255,.05); }
-.main { margin-left: 200px; padding: 24px 32px; max-width: 1100px; }
-.page { display: none; }
+.sidebar a:hover { color: rgba(255,255,255,.6); background: rgba(255,255,255,.02); }
+.sidebar a.active { color: #ffd700; background: rgba(255,215,0,.04); border-left-color: #ffd700; }
+.sidebar a .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+
+/* ===== 主体 ===== */
+.main { margin-left: 200px; padding: 28px 36px; max-width: 1200px; }
+.page { display: none; animation: pageIn .3s ease; }
 .page.active { display: block; }
-h1 { font-size: 22px; margin-bottom: 24px; color: #ffd700; }
+@keyframes pageIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
 
+h1 { font-size: 22px; font-weight: 800; margin-bottom: 24px; letter-spacing: 1px; }
+h1 span { background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* ===== 卡片 ===== */
 .card {
-  background: #16213e; border-radius: 14px; padding: 24px;
-  border: 1px solid rgba(255,255,255,.06); margin-bottom: 20px;
+  background: linear-gradient(135deg, rgba(22,33,62,.6), rgba(18,27,51,.6));
+  border-radius: 16px; padding: 24px;
+  border: 1px solid rgba(255,255,255,.05);
+  margin-bottom: 20px; backdrop-filter: blur(8px);
 }
-.card h3 { font-size: 15px; color: rgba(255,255,255,.6); margin-bottom: 16px; }
+.card h3 {
+  font-size: 13px; color: rgba(255,255,255,.3); margin-bottom: 16px;
+  letter-spacing: 1px; font-weight: 600;
+}
+.card h3 .highlight { color: #ffd700; }
 
+/* ===== 表单 ===== */
 .form-row { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
 .form-group { flex: 1; min-width: 200px; }
-.form-group label { display: block; font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 4px; }
-.form-group input, .form-group select {
-  width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.05); color: #fff; font-size: 14px; outline: none;
+.form-group label {
+  display: block; font-size: 11px; color: rgba(255,255,255,.3);
+  margin-bottom: 5px; letter-spacing: .5px; font-weight: 600;
 }
-.form-group input:focus, .form-group select:focus { border-color: #ffd700; }
+.form-group input, .form-group select {
+  width: 100%; padding: 10px 14px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.03);
+  color: #fff; font-size: 14px; outline: none; transition: all .2s ease;
+}
+.form-group input:focus, .form-group select:focus {
+  border-color: #ffd700; background: rgba(255,215,0,.03);
+  box-shadow: 0 0 0 3px rgba(255,215,0,.06);
+}
 .form-group input[type=color] { height: 42px; padding: 3px; cursor: pointer; }
 .form-group input[type=range] { padding: 0; background: transparent; border: none; }
 
+/* ===== 按钮 ===== */
 .btn {
-  padding: 10px 28px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold;
-  cursor: pointer; transition: .2s;
+  padding: 10px 28px; border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: all .2s cubic-bezier(.22,1,.36,1);
+  position: relative; overflow: hidden;
 }
-.btn-primary { background: #ffd700; color: #1a1a2e; }
-.btn-primary:hover { box-shadow: 0 4px 20px rgba(255,215,0,.3); }
-.btn-danger { background: rgba(255,71,87,.15); color: #ff4757; border: 1px solid rgba(255,71,87,.2); }
-.btn-danger:hover { background: rgba(255,71,87,.25); }
-.btn-sm { padding: 6px 16px; font-size: 12px; }
-.btn-outline { background: transparent; color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.1); }
-.btn-outline:hover { color: #fff; border-color: rgba(255,255,255,.2); }
-.btn-success { background: #2ed573; color: #fff; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #1a1a2e; }
+.btn-primary:hover { box-shadow: 0 6px 24px rgba(255,215,0,.2); transform: translateY(-1px); }
+.btn-danger { background: rgba(255,71,87,.12); color: #ff6b81; border: 1px solid rgba(255,71,87,.15); }
+.btn-danger:hover { background: rgba(255,71,87,.2); }
+.btn-sm { padding: 6px 16px; font-size: 11px; border-radius: 8px; }
+.btn-outline { background: rgba(255,255,255,.04); color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.06); }
+.btn-outline:hover { color: #fff; border-color: rgba(255,255,255,.12); }
+.btn-success { background: linear-gradient(135deg, #2ed573, #26a65b); color: #fff; }
 
+/* ===== Toast ===== */
 .toast {
-  position: fixed; top: 20px; right: 20px; padding: 14px 24px; border-radius: 10px;
-  font-size: 14px; z-index: 999; animation: ti .3s ease-out; display: none;
+  position: fixed; top: 20px; right: 20px; padding: 14px 24px; border-radius: 12px;
+  font-size: 14px; z-index: 999; display: none; font-weight: 600;
+  animation: ti .35s cubic-bezier(.22,1,.36,1);
 }
-.toast.success { background: #2ed573; color: #fff; }
-.toast.error { background: #ff4757; color: #fff; }
-@keyframes ti { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast.success { background: linear-gradient(135deg, #2ed573, #26a65b); color: #fff; }
+.toast.error { background: linear-gradient(135deg, #ff4757, #d63031); color: #fff; }
+@keyframes ti { 0% { transform: translateX(40px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
+/* ===== 奖项 ===== */
 .prize-item { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-.prize-item input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.05); color: #fff; font-size: 14px; outline: none; }
+.prize-item input {
+  flex: 1; padding: 10px 14px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.03);
+  color: #fff; font-size: 14px; outline: none; transition: .2s;
+}
 .prize-item input:focus { border-color: #ffd700; }
 .prize-item input[type=number] { max-width: 80px; flex: none; }
-.prize-item .del-btn { padding: 4px 10px; background: rgba(255,71,87,.15); color: #ff4757; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+.prize-item .del-btn {
+  padding: 4px 10px; background: rgba(255,71,87,.1); color: #ff6b81;
+  border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: .2s;
+}
+.prize-item .del-btn:hover { background: rgba(255,71,87,.2); }
 
+/* ===== 背景预览 ===== */
 .preview-box {
-  width: 100%; height: 120px; border-radius: 10px; border: 2px dashed rgba(255,255,255,.1);
-  display: flex; align-items: center; justify-content: center; font-size: 13px; color: rgba(255,255,255,.2);
-  background-size: cover; background-position: center; margin-bottom: 12px; position: relative; overflow: hidden;
+  width: 100%; height: 130px; border-radius: 12px;
+  border: 1px dashed rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: rgba(255,255,255,.12);
+  background-size: cover; background-position: center;
+  margin-bottom: 12px; position: relative; overflow: hidden;
 }
 .preview-box.has-bg { border-style: solid; }
 .preview-box .overlay-sample { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
 
-.bg-presets { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.bg-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .bg-preset {
-  width: 80px; height: 56px; border-radius: 8px; cursor: pointer; border: 2px solid transparent;
-  background-size: cover; background-position: center; transition: .2s;
+  width: 72px; height: 48px; border-radius: 8px; cursor: pointer;
+  border: 2px solid transparent; background-size: cover; background-position: center;
+  transition: .2s;
 }
-.bg-preset:hover { border-color: rgba(255,215,0,.4); }
+.bg-preset:hover { border-color: rgba(255,215,0,.3); }
 .bg-preset.active { border-color: #ffd700; }
 
-.table-wrap { overflow-x: auto; }
+/* ===== 表格 ===== */
+.table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,.04); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; padding: 10px 12px; color: rgba(255,255,255,.4); font-weight: normal; border-bottom: 1px solid rgba(255,255,255,.06); }
-td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.03); }
-tr:hover td { background: rgba(255,255,255,.02); }
+thead th {
+  text-align: left; padding: 12px 14px; font-weight: 600;
+  color: rgba(255,255,255,.25); font-size: 11px; letter-spacing: 1px;
+  background: rgba(255,255,255,.02); border-bottom: 1px solid rgba(255,255,255,.04);
+}
+tbody td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.02); color: rgba(255,255,255,.7); }
+tbody tr:hover td { background: rgba(255,255,255,.02); }
 
-.badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; }
-.badge-winner { background: rgba(255,215,0,.15); color: #ffd700; }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 10px;
+  font-size: 11px; font-weight: 600;
+}
+.badge-winner { background: rgba(255,215,0,.1); color: #ffd700; }
 
+/* ===== 上传区 ===== */
 .upload-zone {
-  border: 2px dashed rgba(255,255,255,.1); border-radius: 10px; padding: 30px;
-  text-align: center; cursor: pointer; transition: .2s; margin-bottom: 12px;
+  border: 1.5px dashed rgba(255,255,255,.08); border-radius: 12px;
+  padding: 28px; text-align: center; cursor: pointer;
+  transition: all .2s; margin-bottom: 12px;
 }
-.upload-zone:hover { border-color: #ffd700; background: rgba(255,215,0,.03); }
-.upload-zone .icon { font-size: 32px; margin-bottom: 8px; }
-.upload-zone p { color: rgba(255,255,255,.3); font-size: 13px; }
+.upload-zone:hover { border-color: #ffd700; background: rgba(255,215,0,.02); }
+.upload-zone .icon { font-size: 28px; margin-bottom: 6px; }
+.upload-zone p { color: rgba(255,255,255,.2); font-size: 13px; }
 
-.bg-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+/* ===== 背景列表 ===== */
+.bg-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .bg-item {
-  width: 120px; height: 80px; border-radius: 8px; cursor: pointer; overflow: hidden;
-  border: 2px solid transparent; background-size: cover; background-position: center; position: relative;
+  width: 110px; height: 72px; border-radius: 8px; cursor: pointer;
+  overflow: hidden; border: 2px solid transparent;
+  background-size: cover; background-position: center; position: relative;
+  transition: .2s;
 }
-.bg-item:hover { border-color: rgba(255,215,0,.3); }
+.bg-item:hover { border-color: rgba(255,215,0,.2); }
 .bg-item.active { border-color: #ffd700; }
 .bg-item .del-bg {
-  position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%;
-  background: rgba(0,0,0,.6); color: #fff; border: none; cursor: pointer; font-size: 12px; display: none; align-items: center; justify-content: center;
+  position: absolute; top: 3px; right: 3px; width: 20px; height: 20px;
+  border-radius: 50%; background: rgba(0,0,0,.6); color: #fff;
+  border: none; cursor: pointer; font-size: 12px;
+  display: none; align-items: center; justify-content: center;
 }
 .bg-item:hover .del-bg { display: flex; }
 
-.secret-input { font-family: monospace; letter-spacing: 2px; }
-
-.audio-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+/* ===== 音频 ===== */
+.audio-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
 .audio-item {
   display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-  background: rgba(255,255,255,.03); border-radius: 8px; border: 1px solid rgba(255,255,255,.06);
+  background: rgba(255,255,255,.02); border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.04); transition: .2s;
 }
+.audio-item:hover { background: rgba(255,255,255,.04); }
 .audio-item .name { flex: 1; font-size: 13px; }
-.audio-item.active { border-color: #ffd700; background: rgba(255,215,0,.05); }
+.audio-item.active { border-color: rgba(255,215,0,.2); background: rgba(255,215,0,.03); }
 
-.qr-preview {
-  max-width: 200px; border-radius: 12px; border: 2px solid rgba(255,255,255,.1);
-  margin: 12px 0; display: block;
-}
+.qr-preview { max-width: 180px; border-radius: 12px; margin: 12px 0; }
 
-.switch {
-  position: relative; display: inline-block; width: 44px; height: 24px;
-}
+/* ===== Switch ===== */
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .switch .slider {
-  position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,.15);
-  transition: .2s; border-radius: 24px;
+  position: absolute; inset: 0; background: rgba(255,255,255,.12);
+  transition: .2s; border-radius: 24px; cursor: pointer;
 }
 .switch .slider::before {
   content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
@@ -146,13 +210,28 @@ tr:hover td { background: rgba(255,255,255,.02); }
 .switch input:checked + .slider { background: #2ed573; }
 .switch input:checked + .slider::before { transform: translateX(20px); }
 
+/* ===== 状态卡片 ===== */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.stat-card {
+  background: rgba(255,255,255,.02); border-radius: 12px;
+  padding: 20px; text-align: center;
+  border: 1px solid rgba(255,255,255,.04);
+}
+.stat-card .num { font-size: 36px; font-weight: 800; color: #ffd700; line-height: 1.2; }
+.stat-card .label { font-size: 12px; color: rgba(255,255,255,.3); margin-top: 4px; }
+
+/* ===== 密码框 ===== */
+.secret-input { font-family: monospace; letter-spacing: 2px; }
+
+/* ===== 响应式 ===== */
 @media (max-width: 768px) {
-  .sidebar { width: 60px; }
+  .sidebar { width: 56px; }
   .sidebar .brand { font-size: 0; padding: 16px 0; text-align: center; }
-  .sidebar .brand::first-letter { font-size: 18px; }
-  .sidebar a { font-size: 0; padding: 14px 0; text-align: center; }
-  .sidebar a::first-letter { font-size: 14px; }
-  .main { margin-left: 60px; padding: 16px; }
+  .sidebar .brand::before { content: '⚙'; font-size: 18px; }
+  .sidebar a { font-size: 0; padding: 12px 0; text-align: center; justify-content: center; }
+  .sidebar a .icon { font-size: 16px; }
+  .sidebar a.active { border-left-color: transparent; }
+  .main { margin-left: 56px; padding: 16px; }
   .form-row { flex-direction: column; }
   .form-group { min-width: 100%; }
 }
@@ -161,45 +240,33 @@ tr:hover td { background: rgba(255,255,255,.02); }
 <body>
 
 <div class="sidebar">
-  <div class="brand">⚙ 管理</div>
-  <a class="active" onclick="switchPage('basic')">基本设置</a>
-  <a onclick="switchPage('animation')">抽奖动效</a>
-  <a onclick="switchPage('background')">背景设置</a>
-  <a onclick="switchPage('audio')">音效设置</a>
-  <a onclick="switchPage('qrcode')">二维码</a>
-  <a onclick="switchPage('prizes')">奖项管理</a>
-  <a onclick="switchPage('wechat')">微信配置</a>
-  <a onclick="switchPage('data')">数据管理</a>
-  <a onclick="switchPage('participants')">参与者</a>
+  <div class="brand">抽奖管理</div>
+  <a class="active" onclick="switchPage('basic')"><span class="icon">⚙</span> 基本设置</a>
+  <a onclick="switchPage('animation')"><span class="icon">🎮</span> 抽奖动效</a>
+  <a onclick="switchPage('background')"><span class="icon">🖼</span> 背景设置</a>
+  <a onclick="switchPage('audio')"><span class="icon">🎵</span> 音效设置</a>
+  <a onclick="switchPage('qrcode')"><span class="icon">📱</span> 二维码</a>
+  <a onclick="switchPage('prizes')"><span class="icon">🏆</span> 奖项管理</a>
+  <a onclick="switchPage('wechat')"><span class="icon">💬</span> 微信配置</a>
+  <a onclick="switchPage('data')"><span class="icon">📊</span> 数据管理</a>
+  <a onclick="switchPage('participants')"><span class="icon">👥</span> 参与者</a>
 </div>
 
 <div class="main">
   <!-- ===== 基本设置 ===== -->
   <div class="page active" id="page-basic">
-    <h1>基本设置</h1>
+    <h1><span>基本设置</span></h1>
     <div class="card">
       <h3>活动信息</h3>
       <div class="form-row">
-        <div class="form-group">
-          <label>活动标题</label>
-          <input id="s-title" placeholder="年会抽奖">
-        </div>
-        <div class="form-group">
-          <label>副标题</label>
-          <input id="s-subtitle" placeholder="现场大屏抽奖系统">
-        </div>
+        <div class="form-group"><label>活动标题</label><input id="s-title" placeholder="年会抽奖"></div>
+        <div class="form-group"><label>副标题</label><input id="s-subtitle" placeholder="现场大屏抽奖系统"></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label>主题颜色</label>
-          <input id="s-primaryColor" type="color" value="#ffd700">
-        </div>
-        <div class="form-group">
-          <label>参与方式</label>
+        <div class="form-group"><label>主题颜色</label><input id="s-primaryColor" type="color" value="#ffd700"></div>
+        <div class="form-group"><label>参与方式</label>
           <select id="s-joinMethod">
-            <option value="form">仅表单</option>
-            <option value="wechat">仅微信</option>
-            <option value="both">表单+微信</option>
+            <option value="form">仅表单</option><option value="wechat">仅微信</option><option value="both">表单+微信</option>
           </select>
         </div>
       </div>
@@ -209,12 +276,11 @@ tr:hover td { background: rgba(255,255,255,.02); }
 
   <!-- ===== 抽奖动效 ===== -->
   <div class="page" id="page-animation">
-    <h1>抽奖动效设置</h1>
+    <h1><span>抽奖动效</span></h1>
     <div class="card">
-      <h3>抽奖动画效果</h3>
+      <h3>动画风格</h3>
       <div class="form-row">
         <div class="form-group">
-          <label>动画风格</label>
           <select id="s-animationStyle">
             <option value="roll">🎡 滚动抽奖</option>
             <option value="card">🃏 翻牌抽奖</option>
@@ -223,29 +289,25 @@ tr:hover td { background: rgba(255,255,255,.02); }
           </select>
         </div>
       </div>
-      <div style="background:rgba(255,255,255,.03);border-radius:8px;padding:16px;margin-bottom:16px;">
-        <p style="font-size:13px;color:rgba(255,255,255,.4);line-height:1.8;">
-          🎡 <b style="color:#fff;">滚动抽奖</b> — 名字列表上下滚动，经典抽奖效果<br>
-          🃏 <b style="color:#fff;">翻牌抽奖</b> — 多张卡片翻转，逐个揭晓中奖者<br>
-          🎰 <b style="color:#fff;">老虎机</b> — 三列名字独立滚动，如老虎机般停止<br>
-          ✨ <b style="color:#fff;">聚光灯</b> — 所有名字浮动闪烁，最终聚焦中奖者
+      <div style="background:rgba(255,255,255,.02);border-radius:10px;padding:16px;margin-bottom:4px;">
+        <p style="font-size:13px;color:rgba(255,255,255,.3);line-height:1.8;">
+          🎡 <b style="color:#fff;">滚动抽奖</b> — 名字列表上下滚动，经典效果<br>
+          🃏 <b style="color:#fff;">翻牌抽奖</b> — 多张卡片翻转，逐个揭晓<br>
+          🎰 <b style="color:#fff;">老虎机</b> — 三列独立滚动，如老虎机停止<br>
+          ✨ <b style="color:#fff;">聚光灯</b> — 名字浮动闪烁，聚焦中奖者
         </p>
       </div>
     </div>
     <div class="card">
       <h3>抽奖模式</h3>
       <div class="form-row">
-        <div class="form-group">
-          <label>抽奖模式</label>
+        <div class="form-group"><label>抽奖模式</label>
           <select id="s-drawMode">
             <option value="single">单次抽1人</option>
             <option value="batch">单次抽多人</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>每次抽奖人数</label>
-          <input id="s-batchCount" type="number" min="1" max="50" value="3">
-        </div>
+        <div class="form-group"><label>每次人数</label><input id="s-batchCount" type="number" min="1" max="50" value="3"></div>
       </div>
       <button class="btn btn-primary" onclick="saveAnimation()">保存动效设置</button>
     </div>
@@ -253,198 +315,151 @@ tr:hover td { background: rgba(255,255,255,.02); }
 
   <!-- ===== 背景设置 ===== -->
   <div class="page" id="page-background">
-    <h1>背景设置</h1>
+    <h1><span>背景设置</span></h1>
     <div class="card">
-      <h3>背景预览</h3>
-      <div class="preview-box" id="bgPreview">
-        <span>当前背景预览</span>
-        <div class="overlay-sample" id="bgOverlaySample"></div>
-      </div>
+      <h3>预览</h3>
+      <div class="preview-box" id="bgPreview"><span>当前背景预览</span><div class="overlay-sample" id="bgOverlaySample"></div></div>
     </div>
     <div class="card">
       <h3>背景类型</h3>
       <div class="form-row">
-        <div class="form-group">
-          <label>背景模式</label>
+        <div class="form-group"><label>背景模式</label>
           <select id="s-bgType" onchange="onBgTypeChange()">
             <option value="color">纯色背景</option>
             <option value="image">图片背景</option>
             <option value="preset">预设背景</option>
           </select>
         </div>
-        <div class="form-group" id="bgColorGroup">
-          <label>背景颜色</label>
-          <input id="s-bgColor" type="color" value="#0f0f23">
-        </div>
-        <div class="form-group">
-          <label>遮罩透明度</label>
-          <input id="s-bgOverlay" type="range" min="0" max="1" step="0.05" value="0.6" oninput="document.getElementById('overlayVal').textContent=this.value">
-          <span id="overlayVal" style="font-size:12px;color:rgba(255,255,255,.3);">0.6</span>
-        </div>
+        <div class="form-group" id="bgColorGroup"><label>背景颜色</label><input id="s-bgColor" type="color" value="#0f0f23"></div>
+        <div class="form-group"><label>遮罩 <span id="overlayVal" style="color:#ffd700;">0.6</span></label><input id="s-bgOverlay" type="range" min="0" max="1" step="0.05" value="0.6" oninput="document.getElementById('overlayVal').textContent=this.value"></div>
       </div>
     </div>
-    <div class="card" id="bgPresetCard">
-      <h3>预设背景</h3>
-      <div class="bg-presets" id="bgPresets">
-        <div class="bg-preset" style="background:linear-gradient(135deg,#0f0f23,#1a1a3e);" data-color="#0f0f23" onclick="pickPreset(this)"></div>
-        <div class="bg-preset" style="background:linear-gradient(135deg,#0a1628,#16213e);" data-color="#0a1628" onclick="pickPreset(this)"></div>
-        <div class="bg-preset" style="background:linear-gradient(135deg,#1a0a0a,#2e1616);" data-color="#1a0a0a" onclick="pickPreset(this)"></div>
-        <div class="bg-preset" style="background:linear-gradient(135deg,#0a1a0a,#162e16);" data-color="#0a1a0a" onclick="pickPreset(this)"></div>
-        <div class="bg-preset" style="background:linear-gradient(135deg,#1a1a2e,#2d1b4e);" data-color="#1a1a2e" onclick="pickPreset(this)"></div>
-        <div class="bg-preset" style="background:linear-gradient(135deg,#0f0f23,#1a3a3e);" data-color="#0f0f23" onclick="pickPreset(this)"></div>
-      </div>
-    </div>
+    <div class="card" id="bgPresetCard"><h3>预设</h3><div class="bg-presets" id="bgPresets">
+      <div class="bg-preset" style="background:linear-gradient(135deg,#0f0f23,#1a1a3e);" data-color="#0f0f23" onclick="pickPreset(this)"></div>
+      <div class="bg-preset" style="background:linear-gradient(135deg,#0a1628,#16213e);" data-color="#0a1628" onclick="pickPreset(this)"></div>
+      <div class="bg-preset" style="background:linear-gradient(135deg,#1a0a0a,#2e1616);" data-color="#1a0a0a" onclick="pickPreset(this)"></div>
+      <div class="bg-preset" style="background:linear-gradient(135deg,#0a1a0a,#162e16);" data-color="#0a1a0a" onclick="pickPreset(this)"></div>
+      <div class="bg-preset" style="background:linear-gradient(135deg,#1a1a2e,#2d1b4e);" data-color="#1a1a2e" onclick="pickPreset(this)"></div>
+      <div class="bg-preset" style="background:linear-gradient(135deg,#0f0f23,#1a3a3e);" data-color="#0f0f23" onclick="pickPreset(this)"></div>
+    </div></div>
     <div class="card" id="bgImageCard">
-      <h3>上传背景图片</h3>
+      <h3>上传图片</h3>
       <div class="upload-zone" onclick="document.getElementById('bgFileInput').click()">
-        <div class="icon">🖼</div>
-        <p>点击上传活动照片/背景图（支持 JPG / PNG）</p>
+        <div class="icon">🖼</div><p>点击上传活动照片（JPG/PNG）</p>
         <input type="file" id="bgFileInput" accept="image/*" style="display:none" onchange="uploadBg()">
       </div>
       <div class="bg-list" id="bgList"></div>
-      <p style="font-size:12px;color:rgba(255,255,255,.2);margin-top:4px;">💡 上传后选择图片，然后点击"保存背景设置"生效</p>
+      <p style="font-size:11px;color:rgba(255,255,255,.12);margin-top:4px;">上传后点击图片选定，然后保存背景设置</p>
     </div>
     <button class="btn btn-primary" onclick="saveBackground()">保存背景设置</button>
   </div>
 
   <!-- ===== 音效设置 ===== -->
   <div class="page" id="page-audio">
-    <h1>音效设置</h1>
+    <h1><span>音效设置</span></h1>
     <div class="card">
-      <h3>背景音乐 (BGM)</h3>
+      <h3>背景音乐</h3>
       <div class="form-row">
-        <div class="form-group">
-          <label>启用BGM</label>
-          <label class="switch">
-            <input id="s-bgmEnabled" type="checkbox">
-            <span class="slider"></span>
-          </label>
-        </div>
+        <div class="form-group"><label>启用BGM</label><label class="switch"><input id="s-bgmEnabled" type="checkbox"><span class="slider"></span></label></div>
       </div>
       <div class="upload-zone" onclick="document.getElementById('audioFileInput').click()">
-        <div class="icon">🎵</div>
-        <p>点击上传背景音乐（支持 MP3 / WAV / OGG）</p>
+        <div class="icon">🎵</div><p>点击上传背景音乐（MP3/WAV/OGG）</p>
         <input type="file" id="audioFileInput" accept="audio/*" style="display:none" onchange="uploadAudio()">
       </div>
-      <div id="audioList" class="audio-list">
-        <span style="color:rgba(255,255,255,.15);font-size:12px;">暂无上传音乐</span>
-      </div>
+      <div id="audioList" class="audio-list"><span style="color:rgba(255,255,255,.1);font-size:12px;">暂无音乐</span></div>
     </div>
     <div class="card">
-      <h3>当前BGM预览</h3>
-      <div id="bgmPreview">
-        <span style="color:rgba(255,255,255,.2);font-size:13px;">未选择BGM</span>
-      </div>
+      <h3>当前BGM</h3>
+      <div id="bgmPreview"><span style="color:rgba(255,255,255,.15);font-size:13px;">未选择BGM</span></div>
     </div>
     <button class="btn btn-primary" onclick="saveAudio()">保存音效设置</button>
   </div>
 
-  <!-- ===== 二维码设置 ===== -->
+  <!-- ===== 二维码 ===== -->
   <div class="page" id="page-qrcode">
-    <h1>二维码设置</h1>
+    <h1><span>二维码</span></h1>
     <div class="card">
       <h3>当前大屏二维码</h3>
-      <div id="qrPreviewArea">
-        <p style="color:rgba(255,255,255,.2);font-size:13px;">加载中...</p>
-      </div>
+      <div id="qrPreviewArea"><p style="color:rgba(255,255,255,.15);font-size:13px;">加载中...</p></div>
     </div>
     <div class="card">
       <h3>上传自定义二维码</h3>
-      <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:12px;">你可以上传微信小程序的二维码，替换掉系统默认的参与页二维码</p>
+      <p style="font-size:13px;color:rgba(255,255,255,.3);margin-bottom:12px;">上传微信小程序码，替换默认参与页二维码</p>
       <div class="upload-zone" onclick="document.getElementById('qrFileInput').click()">
-        <div class="icon">📱</div>
-        <p>点击上传小程序码/自定义二维码图片</p>
+        <div class="icon">📱</div><p>点击上传小程序码</p>
         <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="uploadQr()">
       </div>
-      <button class="btn btn-danger btn-sm" onclick="clearQr()" style="margin-top:8px;">恢复默认二维码</button>
-    </div>
-    <div class="card">
-      <h3>配置说明</h3>
-      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:2;">
-        <p>1. 上传你微信小程序的二维码图片</p>
-        <p>2. 大屏端会自动显示你上传的二维码</p>
-        <p>3. 用户扫码后打开你的小程序，你需要在</p>
-        <p>   小程序内引导用户访问 <code style="color:#ffd700;">/join.html</code> 参与抽奖</p>
-        <p>4. 如果不需要自定义二维码，点击"恢复默认"即可</p>
-      </div>
+      <button class="btn btn-sm btn-danger" onclick="clearQr()" style="margin-top:4px;">恢复默认二维码</button>
     </div>
   </div>
 
   <!-- ===== 奖项管理 ===== -->
   <div class="page" id="page-prizes">
-    <h1>奖项管理</h1>
+    <h1><span>奖项管理</span></h1>
     <div class="card">
       <h3>奖项设置</h3>
       <div id="prizeList"></div>
-      <button class="btn btn-outline btn-sm" onclick="addPrize()" style="margin-top:8px;">+ 添加奖项</button>
-      <div style="margin-top:16px;">
-        <button class="btn btn-primary" onclick="savePrizes()">保存奖项</button>
-      </div>
+      <button class="btn btn-sm btn-outline" onclick="addPrize()" style="margin-top:8px;">+ 添加奖项</button>
+      <div style="margin-top:16px;"><button class="btn btn-primary" onclick="savePrizes()">保存奖项</button></div>
     </div>
     <div class="card">
       <h3>中奖数据</h3>
-      <div id="winnerData"><span style="color:rgba(255,255,255,.15);">暂无中奖数据</span></div>
+      <div id="winnerData"><span style="color:rgba(255,255,255,.1);">暂无中奖数据</span></div>
     </div>
   </div>
 
   <!-- ===== 微信配置 ===== -->
   <div class="page" id="page-wechat">
-    <h1>微信配置</h1>
+    <h1><span>微信配置</span></h1>
     <div class="card">
-      <h3>微信开放平台（服务号）</h3>
-      <div class="form-group" style="margin-bottom:16px;">
-        <label>AppID</label>
-        <input id="s-wechatAppId" placeholder="wx开头的小程序/公众号AppID">
-      </div>
-      <div class="form-group" style="margin-bottom:16px;">
-        <label>AppSecret</label>
-        <input id="s-wechatAppSecret" type="password" class="secret-input" placeholder="AppSecret">
-      </div>
+      <h3>微信开放平台</h3>
+      <div class="form-group" style="margin-bottom:16px;"><label>AppID</label><input id="s-wechatAppId" placeholder="wx开头的小程序/公众号AppID"></div>
+      <div class="form-group" style="margin-bottom:16px;"><label>AppSecret</label><input id="s-wechatAppSecret" type="password" class="secret-input" placeholder="AppSecret"></div>
       <button class="btn btn-primary" onclick="saveWechat()">保存微信配置</button>
     </div>
     <div class="card">
       <h3>配置指引</h3>
-      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:2;">
-        <p>1. 需使用 <b style="color:#fff;">微信服务号</b>（而非订阅号/小程序）</p>
-        <p>2. 在微信公众平台 → 开发 → 基本配置中获取 AppID 和 AppSecret</p>
-        <p>3. 在 <b style="color:#fff;">IP白名单</b> 中添加服务器IP</p>
+      <div style="font-size:13px;color:rgba(255,255,255,.4);line-height:2;">
+        <p>1. 使用 <b style="color:#fff;">微信服务号</b>（非订阅号/小程序）</p>
+        <p>2. 公众平台 → 开发 → 基本配置获取 AppID 和 Secret</p>
+        <p>3. 添加服务器IP到 <b style="color:#fff;">IP白名单</b></p>
         <p>4. 配置 <b style="color:#fff;">网页授权域名</b> 为当前部署域名</p>
-        <p>5. OAuth2.0 回调路径: <code style="color:#ffd700;">/api/wechat/callback</code></p>
-        <p style="margin-top:8px;color:rgba(255,215,0,.5);">⚠ 如无需微信授权，可将参与方式改为"仅表单"</p>
+        <p>5. OAuth2.0 回调: <code style="color:#ffd700;background:rgba(255,215,0,.08);padding:2px 6px;border-radius:4px;">/api/wechat/callback</code></p>
       </div>
     </div>
   </div>
 
   <!-- ===== 数据管理 ===== -->
   <div class="page" id="page-data">
-    <h1>数据管理</h1>
+    <h1><span>数据管理</span></h1>
     <div class="card">
       <h3>系统状态</h3>
-      <div id="sysStatus" style="font-size:14px;line-height:2;">
-        <p>参与者总数: <span id="statTotal" style="color:#ffd700;">0</span></p>
-        <p>已中奖人数: <span id="statWinners" style="color:#ffd700;">0</span></p>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">参与者总数</div></div>
+        <div class="stat-card"><div class="num" id="statWinners">0</div><div class="label">已中奖人数</div></div>
+        <div class="stat-card"><div class="num" id="statPrizes">0</div><div class="label">奖项总数</div></div>
       </div>
     </div>
     <div class="card">
-      <h3>危险操作</h3>
+      <h3>操作</h3>
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <button class="btn btn-danger" onclick="resetDraw()">重置抽奖（保留参与者）</button>
-        <button class="btn btn-danger" onclick="resetAll()">重置全部（清除所有数据）</button>
+        <button class="btn btn-danger" onclick="resetDraw()">重置抽奖</button>
+        <button class="btn btn-danger" onclick="resetAll()">重置全部</button>
       </div>
     </div>
   </div>
 
   <!-- ===== 参与者 ===== -->
   <div class="page" id="page-participants">
-    <h1>参与者管理</h1>
+    <h1><span>参与者管理</span></h1>
     <div class="card">
       <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
-        <span>共 <span id="pTotal">0</span> 人参与</span>
+        <span style="font-size:14px;">共 <strong style="color:#ffd700;" id="pTotal">0</strong> 人参与</span>
         <button class="btn btn-sm btn-outline" onclick="loadParticipants()">🔄 刷新</button>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>序号</th><th>昵称</th><th>手机号</th><th>参与时间</th><th>状态</th></tr></thead>
+          <thead><tr><th>序号</th><th>昵称</th><th>手机号</th><th>时间</th><th>状态</th></tr></thead>
           <tbody id="participantTable"></tbody>
         </table>
       </div>
@@ -459,7 +474,6 @@ const API = '';
 let settings = {};
 let tempPrizes = [];
 
-// ===== 页面切换 =====
 function switchPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
@@ -473,136 +487,79 @@ function switchPage(name) {
   if (name === 'qrcode') loadQrPreview();
 }
 
-// ===== Toast =====
 function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast ' + type; t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 2500);
 }
 
-// ===== 加载设置 =====
 async function loadSettings() {
   const r = await fetch(`${API}/api/settings`).then(r => r.json());
   if (!r.success) return;
   settings = r.data;
-
-  // Basic
   document.getElementById('s-title').value = settings.title || '';
   document.getElementById('s-subtitle').value = settings.subtitle || '';
   document.getElementById('s-primaryColor').value = settings.primaryColor || '#ffd700';
   document.getElementById('s-joinMethod').value = settings.joinMethod || 'form';
-
-  // Animation
   document.getElementById('s-animationStyle').value = settings.animationStyle || 'roll';
   document.getElementById('s-drawMode').value = settings.drawMode || 'single';
   document.getElementById('s-batchCount').value = settings.batchCount || 3;
-
-  // Background
   document.getElementById('s-bgType').value = settings.bgType || 'color';
   document.getElementById('s-bgColor').value = settings.bgColor || '#0f0f23';
   document.getElementById('s-bgOverlay').value = settings.bgOverlay ?? 0.6;
   document.getElementById('overlayVal').textContent = settings.bgOverlay ?? 0.6;
-
-  // Audio
   document.getElementById('s-bgmEnabled').checked = settings.bgmEnabled !== false;
-  document.getElementById('s-bgmEnabled').disabled = false;
-
-  // WeChat
   document.getElementById('s-wechatAppId').value = settings.wechatAppId || '';
   document.getElementById('s-wechatAppSecret').value = settings.wechatAppSecret || '';
-
-  updateBgPreview();
-  onBgTypeChange();
+  updateBgPreview(); onBgTypeChange();
 }
 
-// ===== 保存基本设置 =====
+// ===== 基本设置 =====
 async function saveBasic() {
-  const body = {
-    title: document.getElementById('s-title').value,
-    subtitle: document.getElementById('s-subtitle').value,
-    primaryColor: document.getElementById('s-primaryColor').value,
-    joinMethod: document.getElementById('s-joinMethod').value,
-  };
-  const r = await fetch(`${API}/api/settings`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  }).then(r => r.json());
-  if (r.success) { showToast('基本设置已保存', 'success'); settings = { ...settings, ...body }; }
-  else showToast('保存失败', 'error');
+  const body = { title: document.getElementById('s-title').value, subtitle: document.getElementById('s-subtitle').value, primaryColor: document.getElementById('s-primaryColor').value, joinMethod: document.getElementById('s-joinMethod').value };
+  const r = await fetch(`${API}/api/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+  if (r.success) { showToast('基本设置已保存', 'success'); settings = { ...settings, ...body }; } else showToast('保存失败', 'error');
 }
 
-// ===== 保存动效设置 =====
+// ===== 动效设置 =====
 async function saveAnimation() {
-  const body = {
-    animationStyle: document.getElementById('s-animationStyle').value,
-    drawMode: document.getElementById('s-drawMode').value,
-    batchCount: parseInt(document.getElementById('s-batchCount').value) || 3,
-  };
-  const r = await fetch(`${API}/api/settings`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  }).then(r => r.json());
-  if (r.success) { showToast('动效设置已保存', 'success'); settings = { ...settings, ...body }; }
-  else showToast('保存失败', 'error');
+  const body = { animationStyle: document.getElementById('s-animationStyle').value, drawMode: document.getElementById('s-drawMode').value, batchCount: parseInt(document.getElementById('s-batchCount').value) || 3 };
+  const r = await fetch(`${API}/api/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+  if (r.success) { showToast('动效设置已保存', 'success'); settings = { ...settings, ...body }; } else showToast('保存失败', 'error');
 }
 
-// ===== 背景设置 =====
+// ===== 背景 =====
 function onBgTypeChange() {
   const v = document.getElementById('s-bgType').value;
   document.getElementById('bgColorGroup').style.display = v === 'color' ? 'block' : 'none';
   document.getElementById('bgPresetCard').style.display = v === 'preset' ? 'block' : 'none';
   document.getElementById('bgImageCard').style.display = v === 'image' ? 'block' : 'none';
 }
-
 function updateBgPreview() {
-  const box = document.getElementById('bgPreview');
-  const overlay = document.getElementById('bgOverlaySample');
-  const t = document.getElementById('s-bgType').value;
-  const color = document.getElementById('s-bgColor').value;
-  const ov = document.getElementById('s-bgOverlay').value;
-
-  box.style.backgroundImage = '';
-  box.style.backgroundColor = 'transparent';
-  if (t === 'image' && settings.bgImage) {
-    box.style.backgroundImage = `url(${settings.bgImage})`;
-    box.style.backgroundSize = 'cover';
-    box.classList.add('has-bg');
-  } else if (t === 'color') {
-    box.style.backgroundColor = color;
-    box.classList.add('has-bg');
-  } else {
-    box.style.backgroundImage = `linear-gradient(135deg, ${color}, ${color}88)`;
-    box.classList.add('has-bg');
-  }
-  overlay.style.opacity = ov;
+  const box = document.getElementById('bgPreview'), ov = document.getElementById('bgOverlaySample');
+  const t = document.getElementById('s-bgType').value, color = document.getElementById('s-bgColor').value;
+  box.style.backgroundImage = ''; box.style.backgroundColor = 'transparent';
+  if (t === 'image' && settings.bgImage) { box.style.backgroundImage = `url(${settings.bgImage})`; box.style.backgroundSize = 'cover'; box.classList.add('has-bg'); }
+  else if (t === 'color') { box.style.backgroundColor = color; box.classList.add('has-bg'); }
+  else { box.style.backgroundImage = `linear-gradient(135deg, ${color}, ${color}88)`; box.classList.add('has-bg'); }
+  ov.style.opacity = document.getElementById('s-bgOverlay').value;
   box.querySelector('span').style.display = 'none';
 }
-
 document.getElementById('s-bgColor').addEventListener('input', updateBgPreview);
 document.getElementById('s-bgOverlay').addEventListener('input', updateBgPreview);
 
 function pickPreset(el) {
   document.querySelectorAll('.bg-preset').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
-  const color = el.dataset.color;
-  document.getElementById('s-bgColor').value = color;
-  updateBgPreview();
+  document.getElementById('s-bgColor').value = el.dataset.color; updateBgPreview();
 }
 
 async function uploadBg() {
   const file = document.getElementById('bgFileInput').files[0];
   if (!file) return;
-  const r = await fetch(`${API}/api/upload-bg`, {
-    method: 'POST', headers: { 'Content-Type': file.type },
-    body: await file.arrayBuffer(),
-  }).then(r => r.json());
-  if (r.success) {
-    showToast('背景上传成功', 'success');
-    settings.bgImage = r.url;
-    document.getElementById('s-bgType').value = 'image';
-    updateBgPreview();
-    loadBgList();
-  } else showToast('上传失败: ' + r.message, 'error');
+  const r = await fetch(`${API}/api/upload-bg`, { method: 'POST', headers: { 'Content-Type': file.type }, body: await file.arrayBuffer() }).then(r => r.json());
+  if (r.success) { showToast('背景上传成功', 'success'); settings.bgImage = r.url; document.getElementById('s-bgType').value = 'image'; updateBgPreview(); loadBgList(); }
+  else showToast('上传失败', 'error');
   document.getElementById('bgFileInput').value = '';
 }
 
@@ -611,70 +568,37 @@ async function loadBgList() {
     const r = await fetch(`${API}/api/backgrounds`).then(r => r.json());
     const list = document.getElementById('bgList');
     if (r.success && r.data.length) {
-      list.innerHTML = r.data.map(b => `
-        <div class="bg-item ${b.url === settings.bgImage ? 'active' : ''}" style="background-image:url(${b.url})" onclick="selectBg('${b.url}','${b.name}')">
-          <button class="del-bg" onclick="event.stopPropagation();deleteBgFile('${b.name}')">×</button>
-        </div>
-      `).join('');
-    } else {
-      list.innerHTML = '<span style="color:rgba(255,255,255,.15);font-size:12px;">暂无背景图片</span>';
-    }
-  } catch(e) {
-    document.getElementById('bgList').innerHTML = '<span style="color:rgba(255,255,255,.15);font-size:12px;">暂无背景图片</span>';
-  }
+      list.innerHTML = r.data.map(b => `<div class="bg-item ${b.url === settings.bgImage ? 'active' : ''}" style="background-image:url(${b.url})" onclick="selectBg('${b.url}')"><button class="del-bg" onclick="event.stopPropagation();deleteBgFile('${b.name}')">×</button></div>`).join('');
+    } else { list.innerHTML = '<span style="color:rgba(255,255,255,.1);font-size:12px;">暂无背景图片</span>'; }
+  } catch(e) { document.getElementById('bgList').innerHTML = '<span style="color:rgba(255,255,255,.1);font-size:12px;">暂无背景图片</span>'; }
 }
 
 function selectBg(url) {
   document.querySelectorAll('.bg-item').forEach(b => b.classList.remove('active'));
   event.target.closest('.bg-item').classList.add('active');
-  settings.bgImage = url;
-  document.getElementById('s-bgType').value = 'image';
-  updateBgPreview();
+  settings.bgImage = url; document.getElementById('s-bgType').value = 'image'; updateBgPreview();
 }
 
 async function deleteBgFile(name) {
-  if (!confirm('确定删除该背景图片？')) return;
-  await fetch(`${API}/api/delete-bg`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name }),
-  });
-  if (settings.bgImage && settings.bgImage.includes(name)) {
-    settings.bgImage = '';
-    document.getElementById('s-bgType').value = 'color';
-    updateBgPreview();
-  }
+  if (!confirm('确定删除？')) return;
+  await fetch(`${API}/api/delete-bg`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) });
+  if (settings.bgImage && settings.bgImage.includes(name)) { settings.bgImage = ''; document.getElementById('s-bgType').value = 'color'; updateBgPreview(); }
   loadBgList();
 }
 
 async function saveBackground() {
-  const body = {
-    bgType: document.getElementById('s-bgType').value,
-    bgColor: document.getElementById('s-bgColor').value,
-    bgImage: settings.bgImage || '',
-    bgOverlay: parseFloat(document.getElementById('s-bgOverlay').value),
-  };
-  const r = await fetch(`${API}/api/settings`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  }).then(r => r.json());
-  if (r.success) { showToast('背景设置已保存', 'success'); settings = { ...settings, ...body }; }
-  else showToast('保存失败', 'error');
+  const body = { bgType: document.getElementById('s-bgType').value, bgColor: document.getElementById('s-bgColor').value, bgImage: settings.bgImage || '', bgOverlay: parseFloat(document.getElementById('s-bgOverlay').value) };
+  const r = await fetch(`${API}/api/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+  if (r.success) { showToast('背景设置已保存', 'success'); settings = { ...settings, ...body }; } else showToast('保存失败', 'error');
 }
 
-// ===== 音效设置 =====
+// ===== 音效 =====
 async function uploadAudio() {
   const file = document.getElementById('audioFileInput').files[0];
   if (!file) return;
-  const r = await fetch(`${API}/api/upload-audio`, {
-    method: 'POST', headers: { 'Content-Type': file.type },
-    body: await file.arrayBuffer(),
-  }).then(r => r.json());
-  if (r.success) {
-    showToast('音频上传成功', 'success');
-    settings.bgmUrl = r.url;
-    loadAudioList();
-    updateBgmPreview();
-  } else showToast('上传失败: ' + r.message, 'error');
+  const r = await fetch(`${API}/api/upload-audio`, { method: 'POST', headers: { 'Content-Type': file.type }, body: await file.arrayBuffer() }).then(r => r.json());
+  if (r.success) { showToast('音频上传成功', 'success'); settings.bgmUrl = r.url; loadAudioList(); updateBgmPreview(); }
+  else showToast('上传失败', 'error');
   document.getElementById('audioFileInput').value = '';
 }
 
@@ -686,214 +610,133 @@ async function loadAudioList() {
       list.innerHTML = r.data.map(a => `
         <div class="audio-item ${a.url === settings.bgmUrl ? 'active' : ''}">
           <span class="name">${a.name}</span>
-          <button class="btn btn-sm ${a.url === settings.bgmUrl ? 'btn-success' : 'btn-outline'}" onclick="selectBgm('${a.url}')">
-            ${a.url === settings.bgmUrl ? '✓ 已选' : '使用'}
-          </button>
+          <button class="btn btn-sm ${a.url === settings.bgmUrl ? 'btn-success' : 'btn-outline'}" onclick="selectBgm('${a.url}')">${a.url === settings.bgmUrl ? '✓ 已选' : '使用'}</button>
           <audio src="${a.url}" preload="none"></audio>
-        </div>
-      `).join('');
-    } else {
-      list.innerHTML = '<span style="color:rgba(255,255,255,.15);font-size:12px;">暂无上传音乐</span>';
-    }
+        </div>`).join('');
+    } else { list.innerHTML = '<span style="color:rgba(255,255,255,.1);font-size:12px;">暂无音乐</span>'; }
   } catch(e) {}
 }
-
-function selectBgm(url) {
-  settings.bgmUrl = url;
-  loadAudioList();
-  updateBgmPreview();
-}
-
+function selectBgm(url) { settings.bgmUrl = url; loadAudioList(); updateBgmPreview(); }
 function updateBgmPreview() {
   const el = document.getElementById('bgmPreview');
-  if (settings.bgmUrl) {
-    el.innerHTML = `<audio controls src="${settings.bgmUrl}" style="width:100%;"></audio>`;
-  } else {
-    el.innerHTML = '<span style="color:rgba(255,255,255,.2);font-size:13px;">未选择BGM</span>';
-  }
+  el.innerHTML = settings.bgmUrl ? `<audio controls src="${settings.bgmUrl}" style="width:100%;border-radius:8px;"></audio>` : '<span style="color:rgba(255,255,255,.15);font-size:13px;">未选择BGM</span>';
 }
-
 async function saveAudio() {
-  const body = {
-    bgmUrl: settings.bgmUrl || '',
-    bgmEnabled: document.getElementById('s-bgmEnabled').checked,
-  };
-  const r = await fetch(`${API}/api/settings`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  }).then(r => r.json());
-  if (r.success) { showToast('音效设置已保存', 'success'); settings = { ...settings, ...body }; }
-  else showToast('保存失败', 'error');
+  const body = { bgmUrl: settings.bgmUrl || '', bgmEnabled: document.getElementById('s-bgmEnabled').checked };
+  const r = await fetch(`${API}/api/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+  if (r.success) { showToast('音效设置已保存', 'success'); settings = { ...settings, ...body }; } else showToast('保存失败', 'error');
 }
 
-// ===== 二维码设置 =====
+// ===== 二维码 =====
 async function loadQrPreview() {
   const el = document.getElementById('qrPreviewArea');
   try {
     const r = await fetch(`${API}/api/qrcode`).then(r => r.json());
     if (r.success) {
-      if (r.isCustom) {
-        el.innerHTML = `
-          <p style="font-size:13px;color:#2ed573;margin-bottom:8px;">✅ 当前使用自定义二维码</p>
-          <img src="${r.qrcode}" class="qr-preview">
-        `;
-      } else {
-        el.innerHTML = `
-          <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:8px;">当前使用默认二维码（扫码进入参与页）</p>
-          <img src="${r.qrcode}" class="qr-preview">
-        `;
-      }
+      el.innerHTML = r.isCustom
+        ? `<p style="font-size:13px;color:#2ed573;margin-bottom:8px;">✅ 自定义二维码</p><img src="${r.qrcode}" class="qr-preview">`
+        : `<p style="font-size:13px;color:rgba(255,255,255,.3);margin-bottom:8px;">当前使用默认二维码</p><img src="${r.qrcode}" class="qr-preview">`;
     }
-  } catch(e) {
-    el.innerHTML = '<span style="color:rgba(255,255,255,.2);font-size:13px;">加载失败</span>';
-  }
+  } catch(e) { el.innerHTML = '<span style="color:rgba(255,255,255,.15);">加载失败</span>'; }
 }
 
 async function uploadQr() {
   const file = document.getElementById('qrFileInput').files[0];
   if (!file) return;
-  const r = await fetch(`${API}/api/upload-qr`, {
-    method: 'POST', headers: { 'Content-Type': file.type },
-    body: await file.arrayBuffer(),
-  }).then(r => r.json());
+  const r = await fetch(`${API}/api/upload-qr`, { method: 'POST', headers: { 'Content-Type': file.type }, body: await file.arrayBuffer() }).then(r => r.json());
   if (r.success) {
-    showToast('二维码上传成功，大屏端将自动显示', 'success');
+    showToast('二维码已上传', 'success');
     settings.qrImage = r.url;
-    // Save to settings
-    await fetch(`${API}/api/settings`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ qrImage: r.url }),
-    });
+    await fetch(`${API}/api/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ qrImage: r.url }) });
     loadQrPreview();
-  } else showToast('上传失败: ' + r.message, 'error');
+  } else showToast('上传失败', 'error');
   document.getElementById('qrFileInput').value = '';
 }
 
 async function clearQr() {
   if (!confirm('恢复默认二维码？')) return;
   settings.qrImage = '';
-  await fetch(`${API}/api/settings`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ qrImage: '' }),
-  });
-  showToast('已恢复默认二维码', 'success');
-  loadQrPreview();
+  await fetch(`${API}/api/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ qrImage: '' }) });
+  showToast('已恢复默认', 'success'); loadQrPreview();
 }
 
-// ===== 奖项管理 =====
+// ===== 奖项 =====
 async function loadPrizes() {
   const r = await fetch(`${API}/api/prizes`).then(r => r.json());
-  if (!r.success) return;
-  tempPrizes = JSON.parse(JSON.stringify(r.data));
-  renderPrizes();
+  if (!r.success) return; tempPrizes = JSON.parse(JSON.stringify(r.data)); renderPrizes();
 }
-
 function renderPrizes() {
   document.getElementById('prizeList').innerHTML = tempPrizes.map((p, i) => `
     <div class="prize-item">
       <input value="${p.name}" onchange="tempPrizes[${i}].name=this.value" placeholder="奖项名称">
-      <span style="color:rgba(255,255,255,.3);font-size:12px;">中奖</span>
+      <span style="color:rgba(255,255,255,.2);font-size:11px;">中奖</span>
       <input type="number" value="${p.count}" min="1" onchange="tempPrizes[${i}].count=parseInt(this.value)||1">
-      <span style="color:rgba(255,255,255,.3);font-size:12px;">人</span>
-      <span style="font-size:11px;color:rgba(255,255,255,.2);">已中 ${p.winners.length} 人</span>
+      <span style="color:rgba(255,255,255,.2);font-size:11px;">人</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.15);">已中 ${p.winners.length}</span>
       <button class="del-btn" onclick="delPrize(${i})">×</button>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
-
-function addPrize() {
-  tempPrizes.push({ name: '新奖项', count: 1, winners: [] });
-  renderPrizes();
-}
-
-function delPrize(i) {
-  if (tempPrizes.length <= 1) return;
-  tempPrizes.splice(i, 1);
-  renderPrizes();
-}
-
+function addPrize() { tempPrizes.push({ name: '新奖项', count: 1, winners: [] }); renderPrizes(); }
+function delPrize(i) { if (tempPrizes.length > 1) { tempPrizes.splice(i, 1); renderPrizes(); } }
 async function savePrizes() {
-  const r = await fetch(`${API}/api/prizes`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prizes: tempPrizes }),
-  }).then(r => r.json());
-  if (r.success) { showToast('奖项已保存', 'success'); loadPrizes(); }
-  else showToast('保存失败', 'error');
+  const r = await fetch(`${API}/api/prizes`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prizes: tempPrizes }) }).then(r => r.json());
+  if (r.success) { showToast('奖项已保存', 'success'); loadPrizes(); } else showToast('保存失败', 'error');
 }
-
 async function loadWinners() {
   const r = await fetch(`${API}/api/winners`).then(r => r.json());
-  if (!r.success || !r.data.length) {
-    document.getElementById('winnerData').innerHTML = '<span style="color:rgba(255,255,255,.15);">暂无中奖数据</span>';
-    return;
-  }
+  if (!r.success || !r.data.length) { document.getElementById('winnerData').innerHTML = '<span style="color:rgba(255,255,255,.1);">暂无中奖数据</span>'; return; }
   document.getElementById('winnerData').innerHTML = r.data.map(p => `
     <div style="margin-bottom:12px;">
-      <strong style="color:#ffd700;">${p.name}</strong> (${p.winners.length}/${p.count})
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+      <strong style="color:#ffd700;">${p.name}</strong> <span style="color:rgba(255,255,255,.3);font-size:12px;">(${p.winners.length}/${p.count})</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
         ${p.winners.map(w => `<span class="badge badge-winner">${w.nickname}</span>`).join('')}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ===== 微信配置 =====
+// ===== 微信 =====
 async function saveWechat() {
-  const body = {
-    wechatAppId: document.getElementById('s-wechatAppId').value,
-    wechatAppSecret: document.getElementById('s-wechatAppSecret').value,
-  };
-  const r = await fetch(`${API}/api/settings`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  }).then(r => r.json());
-  if (r.success) { showToast('微信配置已保存', 'success'); settings = { ...settings, ...body }; }
-  else showToast('保存失败', 'error');
+  const body = { wechatAppId: document.getElementById('s-wechatAppId').value, wechatAppSecret: document.getElementById('s-wechatAppSecret').value };
+  const r = await fetch(`${API}/api/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+  if (r.success) { showToast('微信配置已保存', 'success'); settings = { ...settings, ...body }; } else showToast('保存失败', 'error');
 }
 
-// ===== 数据管理 =====
+// ===== 数据 =====
 async function loadStatus() {
   const r = await fetch(`${API}/api/status`).then(r => r.json());
   if (!r.success) return;
   document.getElementById('statTotal').textContent = r.data.totalParticipants;
   document.getElementById('statWinners').textContent = r.data.totalWinners;
+  document.getElementById('statPrizes').textContent = r.data.prizes.length;
 }
-
 async function resetDraw() {
-  if (!confirm('确定重置所有抽奖数据？（参与者数据保留）')) return;
+  if (!confirm('确定重置所有抽奖数据？（保留参与者）')) return;
   const r = await fetch(`${API}/api/reset`, { method: 'POST' }).then(r => r.json());
   if (r.success) { showToast('已重置抽奖数据', 'success'); loadStatus(); loadPrizes(); }
 }
-
 async function resetAll() {
-  if (!confirm('⚠ 确定重置全部数据？所有参与者和抽奖记录将被清除！')) return;
-  if (!confirm('再次确认：此操作不可撤销！')) return;
+  if (!confirm('⚠ 确定重置全部数据？所有参与者和记录将被清除！')) return;
+  if (!confirm('再次确认，此操作不可撤销！')) return;
   const r = await fetch(`${API}/api/reset-all`, { method: 'POST' }).then(r => r.json());
   if (r.success) { showToast('已重置全部数据', 'success'); loadStatus(); loadParticipants(); }
 }
 
-// ===== 参与者管理 =====
+// ===== 参与者 =====
 async function loadParticipants() {
   const r = await fetch(`${API}/api/participants/detail`).then(r => r.json());
   if (!r.success) return;
   document.getElementById('pTotal').textContent = r.total;
   const tbody = document.getElementById('participantTable');
-  if (!r.data.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,.15);">暂无参与者</td></tr>';
-    return;
-  }
-  tbody.innerHTML = r.data.map((p, i) => `
-    <tr>
-      <td>${i + 1}</td>
-      <td>${p.nickname} ${p.avatar ? '🖼' : ''}</td>
-      <td>${p.phone || '-'}</td>
-      <td style="font-size:11px;color:rgba(255,255,255,.3);">${new Date(p.joinTime).toLocaleString()}</td>
-      <td>${p.isWinner ? '<span class="badge badge-winner">已中奖</span>' : '<span style="color:rgba(255,255,255,.2);">未中奖</span>'}</td>
-    </tr>
-  `).join('');
+  if (!r.data.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,.1);">暂无参与者</td></tr>'; return; }
+  tbody.innerHTML = r.data.map((p, i) => `<tr>
+    <td>${i+1}</td>
+    <td>${p.nickname}</td>
+    <td>${p.phone || '-'}</td>
+    <td style="font-size:11px;color:rgba(255,255,255,.25);">${new Date(p.joinTime).toLocaleString()}</td>
+    <td>${p.isWinner ? '<span class="badge badge-winner">已中奖</span>' : '<span style="color:rgba(255,255,255,.15);">未中奖</span>'}</td>
+  </tr>`).join('');
 }
 
-// ===== 初始化 =====
 loadSettings();
 </script>
 </body>
